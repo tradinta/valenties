@@ -1,26 +1,447 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --font-display: var(--font-vibes);
+  --font-heading: var(--font-playfair);
+  --font-script: var(--font-dancing);
+  --font-sans: var(--font-quicksand);
 
-@theme inline {
+  /* Cosmos Bear Fonts */
+  --font-jakarta: var(--font-jakarta);
+  --font-fredoka: var(--font-fredoka);
+  --font-mono: var(--font-jetbrains);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-primary-dark: var(--primary-dark);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-code: var(--code);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+  --shadow-glow: 0 0 20px rgba(165, 216, 255, 0.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* 
+   Valentine Laboratory Theme
+*/
+:root {
+  /* Core Palette */
+  --velvet: 348 100% 27%;
+  /* #8b0000 */
+  --rose: 349 100% 65%;
+  /* #ff4d6d */
+  --cream: 0 100% 98%;
+  /* #fff5f5 */
+  --gold: 46 65% 52%;
+  /* #d4af37 */
+
+  --background: var(--cream);
+  --foreground: var(--velvet);
+
+  --card: 0 0% 100%;
+  --card-foreground: var(--velvet);
+
+  --popover: 0 0% 100%;
+  --popover-foreground: var(--velvet);
+
+  --primary: var(--rose);
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: var(--cream);
+  --secondary-foreground: var(--velvet);
+
+  --muted: 0 20% 96%;
+  --muted-foreground: 348 30% 40%;
+
+  --accent: 46 65% 52%;
+  /* Gold accent */
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 349 30% 90%;
+  --input: 349 30% 90%;
+  --ring: var(--rose);
+
+  --radius: 1.5rem;
+  /* Rounder UI */
+}
+
+.dark-romance {
+  --background: 340 90% 5%;
+  --foreground: 0 0% 98%;
+  --card: 340 80% 8%;
+  --card-foreground: 0 0% 98%;
+  --primary: 340 70% 40%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 340 60% 15%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 340 60% 15%;
+  --accent-foreground: 0 0% 98%;
+  --muted: 340 40% 10%;
+  --muted-foreground: 340 20% 70%;
+  --border: 340 50% 20%;
+  --input: 340 50% 20%;
+}
+
+.neon-love {
+  --background: 280 90% 5%;
+  --foreground: 0 0% 100%;
+  --primary: 320 100% 50%;
+  /* Neon Pink */
+  --primary-foreground: 0 0% 0%;
+  --secondary: 260 100% 60%;
+  /* Neon Purple */
+  --secondary-foreground: 0 0% 0%;
+  --accent: 260 80% 30%;
+  --accent-foreground: 0 0% 100%;
+  --ring: 320 100% 50%;
+}
+
+.pastel-dream {
+  --background: 210 100% 98%;
+  --foreground: 210 20% 30%;
+  --primary: 330 100% 85%;
+  /* Pastel Pink */
+  --primary-foreground: 330 40% 30%;
+  --secondary: 180 80% 90%;
+  /* Mint */
+  --secondary-foreground: 180 40% 30%;
+  --accent: 180 30% 95%;
+  --accent-foreground: 210 20% 40%;
+}
+
+.obsidian {
+  --background: 220 15% 10%;
+  /* Dark Charcoal */
+  --foreground: 45 20% 90%;
+  /* Off-white */
+  --card: 220 15% 13%;
+  --card-foreground: 45 20% 90%;
+  --primary: 45 80% 60%;
+  /* Gold */
+  --primary-foreground: 220 15% 10%;
+  --secondary: 220 10% 20%;
+  --secondary-foreground: 45 20% 90%;
+  --accent: 45 80% 60%;
+  --accent-foreground: 220 15% 10%;
+  --muted: 220 15% 15%;
+  --muted-foreground: 220 10% 60%;
+  --border: 45 30% 20%;
+  --input: 220 15% 15%;
+  --ring: 45 80% 60%;
+}
+
+.cosmos-bear {
+  --background: #FFFBF5;
+  --foreground: #2D3436;
+
+  --primary: #FF9EB5;
+  --primary-foreground: #FFFFFF;
+  --primary-dark: #FF7596;
+
+  --secondary: #A5D8FF;
+  --secondary-foreground: #2D3436;
+
+  --accent: #FFD166;
+  --accent-foreground: #2D3436;
+
+  --muted: #636E72;
+  --muted-foreground: #B2BEC3;
+
+  --card: rgba(255, 255, 255, 0.65);
+  /* Glass opacity handled in component usually, but here as base */
+  --card-foreground: #2D3436;
+
+  --code: #282C34;
+
+  --font-sans: var(--font-jakarta);
+  --font-display: var(--font-fredoka);
+  --font-mono: var(--font-jetbrains);
+}
+
+.valentine-lube {
+  --background: #FFF9F0;
+  --foreground: #1a1817;
+
+  /* Valentine Red for Primary actions/highlights */
+  --primary: #FF0040;
+  --primary-foreground: #FFFFFF;
+
+  /* Secondary could be the Cream/Yellow from the snippet or a soft Pink */
+  --secondary: #FFF59D;
+  --secondary-foreground: #1a1817;
+
+  /* Accent - Pink */
+  --accent: #FFB8D4;
+  --accent-foreground: #1a1817;
+
+  --muted: #FFE4E1;
+  --muted-foreground: #D44D5C;
+
+  --card: #FFFFFF;
+  --card-foreground: #1a1817;
+
+  /* Pink/Red Outline as requested */
+  --border: #FF0040;
+
+  --radius: 2.5rem;
+
+  --font-sans: var(--font-fredoka);
+  --font-display: var(--font-fredoka);
+
+  --shadow-neubrutal: 4px 4px 0 0 var(--border);
+  --shadow-neubrutal-hover: 2px 2px 0 0 var(--border);
+  --shadow-neubrutal-lg: 10px 10px 0 0 var(--border);
+}
+
+.neo-brutal {
+  --background: #FFF9F0;
+  --foreground: #1a1817;
+
+  --primary: #EC4899;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #FFF59D;
+  --secondary-foreground: #1a1817;
+
+  --accent: #B8F4D8;
+  --accent-foreground: #1a1817;
+
+  --muted: #D1D5DB;
+  --muted-foreground: #6B7280;
+
+  --card: #FFFFFF;
+  --card-foreground: #1a1817;
+
+  --border: #1a1817;
+  --radius: 2.5rem;
+  /* Rounder */
+
+  --font-sans: var(--font-fredoka);
+  --font-display: var(--font-fredoka);
+}
+
+.deep-red {
+  --background: #2D0509;
+  /* Deep Crimson/Dark Chocolate */
+  --foreground: #FFF0F0;
+  /* Soft White */
+
+  --primary: #FF0040;
+  /* Vibrant Red */
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #4A0A15;
+  /* Darker Crimson */
+  --secondary-foreground: #FFF0F0;
+
+  --accent: #FFD700;
+  /* Gold */
+  --accent-foreground: #2D0509;
+
+  --muted: #5C101C;
+  --muted-foreground: #FFB8C6;
+
+  --card: #1A0205;
+  /* Almost black */
+  --card-foreground: #FFF0F0;
+
+  --border: #FF0040;
+  --radius: 2.5rem;
+
+  --font-sans: var(--font-fredoka);
+  --font-display: var(--font-fredoka);
+
+  --shadow-neubrutal: 4px 4px 0 0 #FF0040;
+  --shadow-neubrutal-hover: 2px 2px 0 0 #FF0040;
+}
+
+/* Animations */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-15px);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes float-slow {
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+
+  50% {
+    transform: translateY(-25px) rotate(2deg);
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+.gradient-text-valentine {
+  background: linear-gradient(to right, #FF0040, #FF4081, #FF80AB);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bg-pattern-valentine {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23FF0040' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Inspiration Animations */
+@keyframes bounce-soft {
+
+  0%,
+  100% {
+    transform: translateY(-5%);
+  }
+
+  50% {
+    transform: translateY(5%);
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-bounce-soft {
+  animation: bounce-soft 3s infinite ease-in-out;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 12s linear infinite;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.8s ease-out forwards;
+}
+
+.animate-rainbow {
+  animation: rainbow 5s ease infinite;
+}
+
+.animate-on-load {
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+.stagger-1 {
+  animation-delay: 0.1s;
+}
+
+.stagger-2 {
+  animation-delay: 0.2s;
+}
+
+.stagger-3 {
+  animation-delay: 0.3s;
+}
+
+.stagger-4 {
+  animation-delay: 0.4s;
+}
+
+.btn-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-glow::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.btn-glow:hover::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground transition-colors duration-500;
+  }
 }
