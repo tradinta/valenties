@@ -6,26 +6,24 @@ import { NoButton } from '@/components/trap-engine/NoButton';
 import { YesButton } from '@/components/trap-engine/YesButton';
 import { MechanicDispatcher } from '@/components/trap-engine/MechanicDispatcher';
 import { ChaosLayer } from '@/components/trap-engine/ChaosLayer';
-import { TrapData } from '@/types';
-import { TrackingService } from '@/services/TrackingService';
+import { TrapData, AnalyticsEvent } from '@/types';
+import { TrapService } from '@/services/TrapService';
 import { Heart } from 'lucide-react';
 
 interface TrapGameProps {
     data: TrapData;
     id: string;
-    logEvent: (type: string, metadata?: any) => void;
+    logEvent: (type: AnalyticsEvent['type'], metadata?: Record<string, unknown>) => void;
 }
 
 export const TrapGame: React.FC<TrapGameProps> = ({ data, id, logEvent }) => {
     const [attempts, setAttempts] = useState(0);
-    const [startTime] = useState(Date.now());
     const [isSuccess, setIsSuccess] = useState(false);
     const hasCompleted = useRef(false);
 
     const handleAttempt = () => {
         setAttempts(prev => prev + 1);
         logEvent('click_no', { mechanic: data.noMechanic });
-        // Hover/Interaction tracking could be added to MechanicDispatcher if needed
     };
 
     const [hasPlayedBefore, setHasPlayedBefore] = useState(false);
@@ -47,19 +45,10 @@ export const TrapGame: React.FC<TrapGameProps> = ({ data, id, logEvent }) => {
         logEvent('click_yes', { attempts });
 
         try {
-            // Dynamic import for Firestore helpers
-            const { doc, updateDoc } = await import('firebase/firestore');
-            const { db } = await import('@/lib/firebase');
-
-            // DIRECT UPDATE: Mark trap as completed
-            await updateDoc(doc(db, "traps", id), {
-                status: 'completed',
-                completedAt: Date.now(),
-                finalAttempts: attempts
-            });
-            console.log("Trap marked as completed!");
-        } catch (e) {
-            console.error("Failed to record completion", e);
+            // Use TrapService instead of raw Firestore
+            await TrapService.markCompleted(id, attempts);
+        } catch {
+            // Silently fail - don't expose errors to partner
         }
     };
 
@@ -69,13 +58,10 @@ export const TrapGame: React.FC<TrapGameProps> = ({ data, id, logEvent }) => {
     const saveNote = async () => {
         if (!note.trim()) return;
         try {
-            // Dynamic import to avoid top-level mess if possible
-            const { doc, updateDoc } = await import('firebase/firestore');
-            const { db } = await import('@/lib/firebase');
-            await updateDoc(doc(db, "traps", id), { responseNote: note });
+            await TrapService.saveResponseNote(id, note);
             setNoteSent(true);
-        } catch (e) {
-            console.error(e);
+        } catch {
+            // Silently fail
         }
     }
 

@@ -1,8 +1,29 @@
 import { useState, useEffect, useRef } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, doc, updateDoc, serverTimestamp, increment } from 'firebase/firestore';
-import { AnalyticsSession, AnalyticsEvent } from '@/types';
+import { AnalyticsEvent } from '@/types';
 import { getGeoLocation, getDeviceInfo } from '@/lib/analytics';
+
+type DeviceType = 'mobile' | 'tablet' | 'desktop';
+
+interface SessionData {
+    trapId: string;
+    visitorId: string;
+    startTime: number;
+    country?: string;
+    city?: string;
+    region?: string;
+    ip?: string;
+    deviceType?: DeviceType;
+    browser?: string;
+    os?: string;
+    userAgent?: string;
+    securityAttempts: number;
+    hoverCount: number;
+    clickCount: number;
+}
+
+type EventMetadata = Record<string, unknown>;
 
 export const useAnalytics = (trapId: string, isAuthor: boolean = false) => {
     const [sessionId, setSessionId] = useState<string | null>(null);
@@ -17,20 +38,24 @@ export const useAnalytics = (trapId: string, isAuthor: boolean = false) => {
             const geo = await getGeoLocation();
             const device = getDeviceInfo();
 
-            const sessionData: Partial<AnalyticsSession> = {
+            const sessionData: SessionData = {
                 trapId,
-                visitorId: crypto.randomUUID(), // Local anonymous ID
+                visitorId: crypto.randomUUID(),
                 startTime: Date.now(),
-                ...geo,
-                // @ts-ignore
-                ...device,
+                country: geo.country,
+                city: geo.city,
+                region: geo.region,
+                ip: geo.ip,
+                deviceType: device.deviceType as DeviceType,
+                browser: device.browser,
+                os: device.os,
+                userAgent: device.userAgent,
                 securityAttempts: 0,
                 hoverCount: 0,
                 clickCount: 0
             };
 
             try {
-                // Create Session Doc
                 const docRef = await addDoc(collection(db, `traps/${trapId}/sessions`), {
                     ...sessionData,
                     createdAt: serverTimestamp()
@@ -43,47 +68,40 @@ export const useAnalytics = (trapId: string, isAuthor: boolean = false) => {
                     'stats.views': increment(1)
                 });
 
-            } catch (error) {
-                console.error("Failed to init analytics", error);
+            } catch {
+                // Silent fail in production
             }
         };
 
         initSession();
-
-        // Cleanup: End Session
-        return () => {
-            if (sessionId) {
-                // Attempt to update duration on unmount (less reliable, use pinging for robust)
-            }
-        };
     }, [trapId, isAuthor]);
 
-    // Regular "Ping" to update duration every 10s
+    // Ping to update duration every 10s
     useEffect(() => {
         if (!sessionId) return;
         const interval = setInterval(async () => {
             const duration = (Date.now() - startTimeResponse.current) / 1000;
             const sessionRef = doc(db, `traps/${trapId}/sessions`, sessionId);
-            await updateDoc(sessionRef, { duration }); // Update duration
-        }, 10000); // 10s
+            try {
+                await updateDoc(sessionRef, { duration });
+            } catch {
+                // Silent fail
+            }
+        }, 10000);
         return () => clearInterval(interval);
     }, [sessionId, trapId]);
 
-    const logEvent = async (type: AnalyticsEvent['type'], metadata: any = {}) => {
+    const logEvent = async (type: AnalyticsEvent['type'], metadata: EventMetadata = {}) => {
         if (!sessionId) return;
 
         try {
-            // Add to subcollection 'events'
             await addDoc(collection(db, `traps/${trapId}/sessions/${sessionId}/events`), {
                 type,
                 metadata,
                 timestamp: Date.now()
             });
 
-            // Update aggregates on session
-            // Update aggregates on session
             const sessionRef = doc(db, `traps/${trapId}/sessions`, sessionId);
-            // Also update parent trap stats for Dashboard visibility
             const trapRef = doc(db, 'traps', trapId);
 
             if (type === 'attempt_security') {
@@ -94,12 +112,11 @@ export const useAnalytics = (trapId: string, isAuthor: boolean = false) => {
                 await updateDoc(trapRef, { 'stats.hovers': increment(1) });
             } else if (type === 'click_no') {
                 await updateDoc(sessionRef, { clickCount: increment(1) });
-                // We count clicks as attempts too? Or separate? Let's count them as attempts for the dashboard "Refusals" stat
                 await updateDoc(trapRef, { 'stats.attempts': increment(1) });
             }
 
-        } catch (e) {
-            console.warn("Analytics log failed", e);
+        } catch {
+            // Silent fail - analytics should never break the user experience
         }
     };
 

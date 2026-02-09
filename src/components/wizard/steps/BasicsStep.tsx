@@ -93,23 +93,35 @@ export const BasicsStep: React.FC<BasicsStepProps> = ({ config, updateConfig, on
                     </div>
                 </div>
 
-                {/* Right Column: Images */}
+                {/* Right Column: Optional Photo Dropdown */}
                 <div className="space-y-6">
-                    <div className="bg-[var(--card)] dark:bg-zinc-800 p-6 rounded-3xl border-[3px] border-black shadow-[6px_6px_0_0_#000] space-y-4 relative rotate-1 hover:rotate-0 transition-transform duration-200">
-                        <div className="flex items-center gap-2 text-[var(--primary)] mb-2">
-                            <Camera className="w-5 h-5 fill-current" />
-                            <span className="text-sm font-bold uppercase tracking-widest text-black dark:text-white">Shared Memories</span>
+                    <details className="group bg-[var(--card)] dark:bg-zinc-800 rounded-3xl border-[3px] border-black shadow-[6px_6px_0_0_#000] relative overflow-hidden">
+                        <summary className="p-6 cursor-pointer list-none flex items-center justify-between hover:bg-black/5 transition-colors">
+                            <div className="flex items-center gap-2">
+                                <Camera className="w-5 h-5 fill-current text-[var(--primary)]" />
+                                <span className="font-bold uppercase tracking-widest text-black dark:text-white">Add Photos</span>
+                                <span className="text-xs font-medium text-gray-400 ml-2">(Optional)</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs font-bold text-gray-400 group-open:hidden">Click to expand</span>
+                                <svg className="w-5 h-5 text-gray-400 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </summary>
+                        <div className="p-6 pt-0 space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
+                            <p className="text-xs text-[var(--foreground-muted)] dark:text-gray-400 font-medium">
+                                Upload up to 4 photos of you two together. These will float around your question beautifully.
+                            </p>
+                            <div className="bg-white dark:bg-zinc-700 rounded-xl border-2 border-black p-2">
+                                <MultiImageUploader
+                                    images={config.assets?.images || (config.assets?.image ? [config.assets.image] : [])}
+                                    onImagesChange={handleMainImagesUpdate}
+                                    maxImages={4}
+                                />
+                            </div>
                         </div>
-                        <p className="text-xs text-[var(--foreground-muted)] dark:text-gray-400 mb-4 ml-1 font-medium">These photos will float around your question.</p>
-
-                        <div className="bg-white dark:bg-zinc-700 rounded-xl border-2 border-black p-2">
-                            <MultiImageUploader
-                                images={config.assets?.images || (config.assets?.image ? [config.assets.image] : [])}
-                                onImagesChange={handleMainImagesUpdate}
-                                maxImages={4}
-                            />
-                        </div>
-                    </div>
+                    </details>
                 </div>
             </div>
 

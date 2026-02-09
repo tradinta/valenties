@@ -4,14 +4,18 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Lock } from 'lucide-react';
+import { AnalyticsEvent } from '@/types';
 
 interface SecurityGateProps {
     question: string;
     answer: string;
     onUnlock: () => void;
+    hint?: string;
+    scold?: string;
+    logEvent: (type: AnalyticsEvent['type'], metadata?: Record<string, unknown>) => void;
 }
 
-export const SecurityGate: React.FC<SecurityGateProps & { hint?: string; scold?: string; logEvent: any }> = ({ question, answer, onUnlock, hint, scold, logEvent }) => {
+export const SecurityGate: React.FC<SecurityGateProps> = ({ question, answer, onUnlock, hint, scold, logEvent }) => {
     const [input, setInput] = useState("");
     const [error, setError] = useState(false);
     const [showHint, setShowHint] = useState(false);

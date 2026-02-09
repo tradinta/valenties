@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { TrapData, AnalyticsEvent } from '@/types';
+import { TrapData } from '@/types';
 import { TrapGame } from '@/components/trap-engine/TrapGame';
 import { Loader2, HeartCrack } from 'lucide-react';
 import { SecurityGate } from '@/components/trap-engine/SecurityGate';
@@ -34,15 +34,13 @@ export default function TrapPage() {
                     const trapData = docSnap.data() as TrapData;
                     setData(trapData);
                     // Check if locked
-                    // @ts-ignore
-                    if (trapData.security && trapData.security.question) {
+                    if (trapData.security?.question) {
                         setIsLocked(true);
                     }
                 } else {
                     logEvent('error', { detail: 'Trap not found' });
                 }
-            } catch (e) {
-                console.error(e);
+            } catch {
                 logEvent('error', { detail: 'Fetch failed' });
             } finally {
                 setLoading(false);
@@ -50,6 +48,7 @@ export default function TrapPage() {
         };
 
         fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     if (loading) {
@@ -76,22 +75,19 @@ export default function TrapPage() {
 
     return (
         <main className={`min-h-screen w-full overflow-hidden flex flex-col items-center justify-center p-4 transition-colors duration-500 ${data.theme}`}>
-            {isLocked ? (
-                // @ts-ignore
+            {isLocked && data.security ? (
                 <SecurityGate
                     question={data.security.question}
                     answer={data.security.answer}
                     hint={data.security.hint}
                     scold={data.security.scold}
                     onUnlock={() => setIsLocked(false)}
-                    // @ts-ignore
                     logEvent={logEvent}
                 />
             ) : (
                 <TrapGame
                     data={data}
                     id={id}
-                    // @ts-ignore
                     logEvent={logEvent}
                 />
             )}

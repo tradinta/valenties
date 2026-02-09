@@ -10,7 +10,7 @@ import { LogoDroplet } from '@/components/ui/LogoDroplet';
 
 export const Navbar = () => {
     const { theme, setTheme } = useTheme();
-    const { isLoggedIn, user, logout } = useAuth();
+    const { firebaseUser, isLoggedIn, logout, isAdmin } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     // Theme colors for the dots
@@ -79,7 +79,7 @@ export const Navbar = () => {
                             {themes.map((t) => (
                                 <button
                                     key={t.id}
-                                    onClick={() => setTheme(t.id as any)}
+                                    onClick={() => setTheme(t.id as 'cosmos' | 'neo' | 'valentine' | 'deep-red')}
                                     className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-bold transition-colors ${theme === t.id ? 'bg-[var(--secondary)] text-[var(--primary)]' : 'hover:bg-gray-100 dark:hover:bg-zinc-700 text-[var(--foreground)]'}`}
                                 >
                                     <div className="w-4 h-4 rounded-full border border-black/20 shadow-sm" style={{ backgroundColor: t.color }}></div>
@@ -172,7 +172,7 @@ export const Navbar = () => {
                             {themes.map((t) => (
                                 <button
                                     key={t.id}
-                                    onClick={() => setTheme(t.id as any)}
+                                    onClick={() => setTheme(t.id as 'cosmos' | 'neo' | 'valentine' | 'deep-red')}
                                     className={`aspect-square rounded-full border-2 border-[var(--foreground)] flex items-center justify-center transition-all ${theme === t.id ? 'scale-110 shadow-md ring-2 ring-offset-2 ring-[var(--primary)]' : 'opacity-70'}`}
                                     style={{ backgroundColor: t.color }}
                                 />

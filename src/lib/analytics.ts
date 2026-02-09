@@ -46,8 +46,8 @@ export const getGeoLocation = async (): Promise<GeoLocation> => {
         try {
             const result = await provider();
             if (result.country) return result;
-        } catch (e) {
-            console.warn('Geo provider failed, trying next...');
+        } catch {
+            // Provider failed, try next
         }
     }
 

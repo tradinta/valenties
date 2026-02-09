@@ -7,13 +7,13 @@ interface ChaosLayerProps {
     mode: 'none' | 'maze' | 'distractions' | 'fill-screen';
 }
 
-import { Ban, X, Frown, ShieldAlert, Skull } from 'lucide-react';
+import { Ban, X, Frown, ShieldAlert, Skull, LucideIcon } from 'lucide-react';
 
 interface ChaosElement {
     id: number;
     x: number;
     y: number;
-    Icon: React.ElementType;
+    Icon: LucideIcon;
 }
 
 export const ChaosLayer: React.FC<ChaosLayerProps> = ({ mode }) => {
@@ -48,7 +48,7 @@ export const ChaosLayer: React.FC<ChaosLayerProps> = ({ mode }) => {
                     <motion.div
                         key={el.id}
                         initial={{ opacity: 0, scale: 0 }}
-                        animate={{ opacity: [0, 1, 0], scale: [0.5, 1.5, 0.5], x: Math.random() * 50 - 25 }}
+                        animate={{ opacity: [0, 1, 0], scale: [0.5, 1.5, 0.5] }}
                         transition={{ duration: 2 }}
                         style={{ left: `${el.x}%`, top: `${el.y}%`, position: 'absolute' }}
                         className="text-rose-300"

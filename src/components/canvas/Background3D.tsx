@@ -4,8 +4,16 @@ import React, { useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
 import * as random from 'maath/random/dist/maath-random.esm';
+import type { Points as PointsType } from 'three';
 
-const THEME_CONFIG = {
+type ThemeKey = 'cupid' | 'dark-romance' | 'neon-love' | 'pastel-dream' | 'obsidian';
+
+interface ThemeConfig {
+    color: string;
+    bg: string;
+}
+
+const THEME_CONFIG: Record<ThemeKey, ThemeConfig> = {
     'cupid': { color: '#ff69b4', bg: 'bg-[radial-gradient(circle_at_center,_#fff5f5_0%,_#fff0f5_100%)]' },
     'dark-romance': { color: '#8b0000', bg: 'bg-[radial-gradient(circle_at_center,_#2a0a12_0%,_#000000_100%)]' },
     'neon-love': { color: '#00ffaa', bg: 'bg-[radial-gradient(circle_at_center,_#1a0b2e_0%,_#000000_100%)]' },
@@ -13,13 +21,16 @@ const THEME_CONFIG = {
     'obsidian': { color: '#333333', bg: 'bg-[radial-gradient(circle_at_center,_#1a1a1a_0%,_#000000_100%)]' },
 };
 
+const isValidTheme = (theme: string): theme is ThemeKey => {
+    return theme in THEME_CONFIG;
+};
+
 const Particles = ({ theme }: { theme: string }) => {
-    const ref = useRef<any>();
-    // @ts-ignore
-    const config = THEME_CONFIG[theme] || THEME_CONFIG['cupid'];
+    const ref = useRef<PointsType>(null);
+    const config = isValidTheme(theme) ? THEME_CONFIG[theme] : THEME_CONFIG['cupid'];
     const sphere = useMemo(() => random.inSphere(new Float32Array(6000), { radius: 1.8 }), []);
 
-    useFrame((state, delta) => {
+    useFrame((_, delta) => {
         if (ref.current) {
             ref.current.rotation.x -= delta / 15;
             ref.current.rotation.y -= delta / 20;
@@ -43,8 +54,7 @@ const Particles = ({ theme }: { theme: string }) => {
 };
 
 export const Background3D = ({ theme = 'cupid' }: { theme?: string }) => {
-    // @ts-ignore
-    const config = THEME_CONFIG[theme] || THEME_CONFIG['cupid'];
+    const config = isValidTheme(theme) ? THEME_CONFIG[theme] : THEME_CONFIG['cupid'];
 
     return (
         <div className={`fixed inset-0 z-0 pointer-events-none transition-colors duration-700 ${config.bg}`}>

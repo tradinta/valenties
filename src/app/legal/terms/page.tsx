@@ -1,49 +1,54 @@
-import React from 'react';
-import { Shield, FileText, Scale } from 'lucide-react';
+import { FileText } from 'lucide-react';
+import { LegalLayout } from '@/components/layout/LegalLayout';
 
-const LegalLayout = ({ children, title, icon: Icon }: { children: React.ReactNode, title: string, icon: any }) => (
-    <div className="min-h-screen bg-[#FFF9F0] pt-32 pb-20 px-4">
-        <div className="max-w-3xl mx-auto bg-white border-[4px] border-black p-8 md:p-12 rounded-[2rem] shadow-[8px_8px_0_0_#000]">
-            <div className="flex items-center gap-4 mb-8 border-b-4 border-black pb-6">
-                <div className="w-12 h-12 bg-[#FFEB3B] border-[3px] border-black rounded-xl flex items-center justify-center">
-                    <Icon className="w-6 h-6" />
-                </div>
-                <h1 className="text-3xl md:text-4xl font-black uppercase">{title}</h1>
-            </div>
-            <div className="prose prose-lg prose-headings:font-black prose-p:font-medium prose-p:text-gray-600 max-w-none">
-                {children}
-            </div>
-        </div>
-    </div>
-);
-
-export default function TermsPage() {
+export default function TermsOfService() {
     return (
-        <LegalLayout title="Terms of Use" icon={FileText}>
-            <p><strong>Effective Date:</strong> February 14, 2026</p>
-
-            <h3>1. The "Just for Fun" Clause</h3>
+        <LegalLayout title="Terms of Service" icon={FileText}>
+            <h2>1. Acceptance of Terms</h2>
             <p>
-                By using Kihumba ("The Service"), you acknowledge that this is a digital toy designed for amusement, pranks, and lighthearted romantic gestures.
-                We are not responsible if your partner actually gets mad at the "Run Away" button. Use at your own risk.
+                By using <strong>Kihumba</strong> (the "Service"), you agree to these Terms of Service. If you disagree, please close this tab and find a less chaotic way to ask someone out.
             </p>
 
-            <h3>2. User Content</h3>
+            <h2>2. Description of Service</h2>
             <p>
-                You retain ownership of the photos and text you upload. However, you grant us a license to host and display this content for the purpose of serving your Trap.
-                Please do not upload illegal, explicit, or hateful content. We have a "Delete" button for a reason, and we will use it if you're being a jerk.
+                Kihumba provides a platform for creating interactive, playful "Valentine's Trap" experiences. The "No" button may or may not cooperate, and we take no responsibility for the emotional rollercoaster that ensues.
             </p>
 
-            <h3>3. Premium Services</h3>
+            <h2>3. User Conduct</h2>
+            <p>You agree not to:</p>
+            <ul>
+                <li>Use the Service for any unlawful purpose.</li>
+                <li>Harass, abuse, or harm another person using the Service.</li>
+                <li>Upload content that is offensive, defamatory, or violates the rights of others.</li>
+                <li>Attempt to reverse-engineer, hack, or disrupt the Service.</li>
+            </ul>
+
+            <h2>4. Content Ownership</h2>
             <p>
-                Premium features ("Cupid's Arrows") are one-time purchases or subscriptions as specified.
-                Refunds are generally not provided for "I changed my mind" scenarios, but we handle technical failures on a case-by-case basis.
+                You retain ownership of any content you upload (images, messages). By uploading, you grant Kihumba a non-exclusive license to store and display this content for the purpose of providing the Service.
             </p>
 
-            <h3>4. Liability</h3>
+            <h2>5. Disclaimer of Warranties</h2>
             <p>
-                We are not liable for any failed proposals, broken hearts, or thrown phones resulting from the frustration of our "Impossible Form" mechanic.
+                THE SERVICE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. We are not liable for any failed proposals, broken hearts, or thrown phones resulting from the frustration of our "Impossible Form" mechanic.
             </p>
+
+            <h2>6. Limitation of Liability</h2>
+            <p>
+                In no event shall Kihumba be liable for any indirect, incidental, special, consequential, or punitive damages arising out of your use of the Service.
+            </p>
+
+            <h2>7. Changes to Terms</h2>
+            <p>
+                We reserve the right to modify these terms at any time. Continued use of the Service constitutes acceptance of the new terms.
+            </p>
+
+            <h2>8. Contact</h2>
+            <p>
+                For any questions, email us at <a href="mailto:support@kihumba.com" className="underline">support@kihumba.com</a>.
+            </p>
+
+            <p className="text-sm text-gray-400 mt-8">Last updated: February 2026</p>
         </LegalLayout>
     );
 }

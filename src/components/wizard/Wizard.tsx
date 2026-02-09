@@ -6,7 +6,7 @@ import { TrapConfig } from '@/types';
 import { NeoBrutalBackground } from '@/components/ui/NeoBrutalBackground';
 import { IntroStep } from './steps/IntroStep';
 import { BasicsStep } from './steps/BasicsStep';
-import { ChallengeStep } from './steps/ChallengeStep';
+// ChallengeStep removed - to be re-added later
 import { MechanicsStep } from './steps/MechanicsStep';
 import { MediaStep } from './steps/MediaStep';
 import { SecurityStep } from './steps/SecurityStep';
@@ -62,10 +62,9 @@ export const Wizard = () => {
         switch (step) {
             case 0: return <IntroStep onNext={nextStep} />;
             case 1: return <BasicsStep config={config} updateConfig={updateConfig} onNext={nextStep} onBack={prevStep} />;
-            case 2: return <ChallengeStep config={config} updateConfig={updateConfig} onNext={nextStep} onBack={prevStep} />;
-            case 3: return <MechanicsStep config={config} updateConfig={updateConfig} onNext={nextStep} onBack={prevStep} />;
-            // Media moved to Basics
-            case 4: return <SecurityStep config={config} updateConfig={updateConfig} onSubmit={handleSubmit} onBack={prevStep} isSubmitting={isLoading} />;
+            // ChallengeStep removed (theme/labels) - will be re-added later
+            case 2: return <MechanicsStep config={config} updateConfig={updateConfig} onNext={nextStep} onBack={prevStep} />;
+            case 3: return <SecurityStep config={config} updateConfig={updateConfig} onSubmit={handleSubmit} onBack={prevStep} isSubmitting={isLoading} />;
             default: return <div>Step {step} Coming Soon</div>;
         }
     };
@@ -88,7 +87,7 @@ export const Wizard = () => {
 
                             {/* Progress Indicator */}
                             <div className="absolute top-6 right-8 z-10 font-display text-xl text-white drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">
-                                Step {step} / 4
+                                Step {step} / 3
                             </div>
 
                             <div className="relative z-10">

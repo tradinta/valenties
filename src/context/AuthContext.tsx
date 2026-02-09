@@ -1,15 +1,26 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { signInAnonymously, signOut, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import {
+    signInAnonymously,
+    signOut,
+    onAuthStateChanged,
+    User as FirebaseUser,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    updateProfile
+} from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase';
 
 interface AuthContextType {
     isLoggedIn: boolean;
     isAdmin: boolean;
-    login: (username: string) => Promise<void>;
+    loading: boolean;
+    loginAnonymous: (displayName?: string) => Promise<void>;
+    loginWithEmail: (email: string, password: string) => Promise<void>;
+    signupWithEmail: (email: string, password: string, displayName: string) => Promise<void>;
     logout: () => Promise<void>;
-    user: string | null; // The display username
     firebaseUser: FirebaseUser | null;
 }
 
@@ -17,56 +28,93 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [user, setUser] = useState<string | null>(null);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
 
-    useEffect(() => {
-        // Restore custom username from local storage
-        const savedUser = localStorage.getItem('user_session');
-        if (savedUser) {
-            setUser(savedUser);
-            setIsAdmin(savedUser === 'admin');
+    // Check admin status from Firestore (server-side source of truth)
+    const checkAdminStatus = useCallback(async (user: FirebaseUser) => {
+        try {
+            // Check for admin role in Firestore users collection
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                setIsAdmin(userData?.role === 'admin');
+            } else {
+                setIsAdmin(false);
+            }
+        } catch {
+            // Default to non-admin on error
+            setIsAdmin(false);
         }
+    }, []);
 
-        // Listen to Firebase Auth state
-        const unsubscribe = onAuthStateChanged(auth, (authUser) => {
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
             if (authUser) {
                 setFirebaseUser(authUser);
                 setIsLoggedIn(true);
+                await checkAdminStatus(authUser);
             } else {
                 setFirebaseUser(null);
                 setIsLoggedIn(false);
+                setIsAdmin(false);
             }
+            setLoading(false);
         });
 
         return () => unsubscribe();
-    }, []);
+    }, [checkAdminStatus]);
 
-    const login = async (username: string) => {
+    const loginAnonymous = async (displayName?: string) => {
         try {
-            await signInAnonymously(auth);
-            setUser(username);
-            setIsAdmin(username === 'admin');
-            localStorage.setItem('user_session', username);
+            const result = await signInAnonymously(auth);
+            if (displayName && result.user) {
+                await updateProfile(result.user, { displayName });
+            }
         } catch (error) {
-            console.error("Login failed:", error);
+            throw new Error('Anonymous login failed');
+        }
+    };
+
+    const loginWithEmail = async (email: string, password: string) => {
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+        } catch (error) {
+            throw new Error('Email login failed. Check your credentials.');
+        }
+    };
+
+    const signupWithEmail = async (email: string, password: string, displayName: string) => {
+        try {
+            const result = await createUserWithEmailAndPassword(auth, email, password);
+            if (result.user) {
+                await updateProfile(result.user, { displayName });
+            }
+        } catch (error) {
+            throw new Error('Signup failed. Email may already be in use.');
         }
     };
 
     const logout = async () => {
         try {
             await signOut(auth);
-            setUser(null);
-            setIsAdmin(false);
-            localStorage.removeItem('user_session');
         } catch (error) {
-            console.error("Logout failed:", error);
+            throw new Error('Logout failed');
         }
     };
 
     return (
-        <AuthContext.Provider value={{ isLoggedIn, login, logout, user, isAdmin, firebaseUser }}>
+        <AuthContext.Provider value={{
+            isLoggedIn,
+            isAdmin,
+            loading,
+            loginAnonymous,
+            loginWithEmail,
+            signupWithEmail,
+            logout,
+            firebaseUser
+        }}>
             {children}
         </AuthContext.Provider>
     );

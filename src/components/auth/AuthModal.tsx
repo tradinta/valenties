@@ -15,13 +15,13 @@ export const AuthModal = ({ isOpen, onClose, toolName }: AuthModalProps) => {
     const [isLogin, setIsLogin] = useState(true);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const { login } = useAuth();
+    const { loginAnonymous } = useAuth();
 
     // Auto-login for demo purposes since user requested "easy"
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (username) {
-            login(username);
+            await loginAnonymous(username);
             onClose();
         }
     };

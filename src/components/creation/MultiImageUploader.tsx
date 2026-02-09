@@ -44,8 +44,7 @@ export const MultiImageUploader: React.FC<MultiImageUploaderProps> = ({ images =
                 }
             }
             onImagesChange([...images, ...newUrls]);
-        } catch (error) {
-            console.error("Upload error", error);
+        } catch {
             alert("Failed to upload some images.");
         } finally {
             setUploading(false);
@@ -75,7 +74,7 @@ export const MultiImageUploader: React.FC<MultiImageUploaderProps> = ({ images =
                             <img src={url} alt={`Memory ${index + 1}`} className="w-full h-full object-cover" />
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <Button
-                                    variant="destructive"
+                                    variant="ghost"
                                     size="icon"
                                     className="rounded-full bg-red-500/80 hover:bg-red-600"
                                     onClick={() => removeImage(index)}

@@ -6,12 +6,7 @@ import { Loader2, Plus, LogOut, ExternalLink, Activity, Heart, Star, Sparkles, L
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { User } from 'firebase/auth';
-import { TrapConfig, TrapStats } from '@/types';
-
-interface TrapWithId extends TrapConfig {
-    id: string;
-    stats?: TrapStats;
-}
+import { TrapWithId } from '@/types/shared';
 
 interface CosmosDashboardProps {
     user: User | null;
@@ -293,7 +288,16 @@ export const CosmosDashboard: React.FC<CosmosDashboardProps> = ({ user, traps, o
     );
 }
 // Helper for pricing cards can be removed or kept defined
-const PricingCard = ({ title, price, period, popular, features, onClick }: any) => (
+interface PricingCardProps {
+    title: string;
+    price: string;
+    period: string;
+    popular?: boolean;
+    features: string[];
+    onClick: () => void;
+}
+
+const PricingCard: React.FC<PricingCardProps> = ({ title, price, period, popular, features, onClick }) => (
     <div
         onClick={onClick}
         className={`cursor-pointer p-6 rounded-3xl border-2 transition-all hover:scale-[1.02] ${popular ? 'border-amber-400 bg-amber-50/50' : 'border-slate-100 hover:border-rose-200 bg-white'}`}

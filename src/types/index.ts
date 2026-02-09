@@ -39,7 +39,7 @@ export interface TrapConfig {
 export interface AnalyticsEvent {
     type: 'view' | 'attempt_security' | 'hover_no' | 'click_no' | 'click_yes' | 'error';
     timestamp: number;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
 }
 
 export interface AnalyticsSession {
@@ -76,6 +76,51 @@ export interface TrapStats {
 }
 
 export interface TrapData extends TrapConfig {
+    creatorId: string;
     stats?: TrapStats;
-    status: 'active' | 'completed' | 'disabled'; // Added disabled
+    status: 'active' | 'completed' | 'disabled';
+}
+
+// Polls
+export interface PollOption {
+    id: string;
+    text: string;
+    image?: string;
+    votes: number;
+}
+
+export interface PollConfig {
+    allowMultiple: boolean;
+    requireAuth: boolean;
+    collectLocation: boolean;
+    startDate?: number;
+    endDate?: number;
+    isPublic: boolean;
+}
+
+export interface Poll {
+    id: string;
+    creatorId: string;
+    question: string;
+    description?: string;
+    options: PollOption[];
+    config: PollConfig;
+    createdAt: number;
+    status: 'active' | 'ended' | 'scheduled';
+    totalVotes: number;
+    views: number;
+    theme: 'neo-brutal' | 'dark-romance' | 'minimal';
+}
+
+export interface Vote {
+    id?: string;
+    pollId: string;
+    optionIds: string[];
+    voterId: string; // IP hash or User ID
+    timestamp: number;
+    metadata?: {
+        country?: string;
+        device?: string;
+        browser?: string;
+    };
 }

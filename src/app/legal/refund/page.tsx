@@ -1,48 +1,38 @@
-import React from 'react';
-import { Scale } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
+import { LegalLayout } from '@/components/layout/LegalLayout';
 
-const LegalLayout = ({ children, title, icon: Icon }: { children: React.ReactNode, title: string, icon: any }) => (
-    <div className="min-h-screen bg-[#FFF9F0] pt-32 pb-20 px-4">
-        <div className="max-w-3xl mx-auto bg-white border-[4px] border-black p-8 md:p-12 rounded-[2rem] shadow-[8px_8px_0_0_#000]">
-            <div className="flex items-center gap-4 mb-8 border-b-4 border-black pb-6">
-                <div className="w-12 h-12 bg-[#FF8A80] border-[3px] border-black rounded-xl flex items-center justify-center">
-                    <Icon className="w-6 h-6" />
-                </div>
-                <h1 className="text-3xl md:text-4xl font-black uppercase">{title}</h1>
-            </div>
-            <div className="prose prose-lg prose-headings:font-black prose-p:font-medium prose-p:text-gray-600 max-w-none">
-                {children}
-            </div>
-        </div>
-    </div>
-);
-
-export default function RefundPage() {
+export default function RefundPolicy() {
     return (
-        <LegalLayout title="Refund Policy" icon={Scale}>
-            <p><strong>Simplicity is Key.</strong></p>
-
-            <h3>1. The "It Didn't Work" Guarantee</h3>
+        <LegalLayout title="Refund Policy" icon={RefreshCw}>
+            <h2>1. Premium Purchases</h2>
             <p>
-                If our site crashed, the image upload failed, or the trap link was 404 on arrival due to our error,
-                we will refund your Premium purchase 100%. Just email support with your Trap ID.
+                All Premium subscriptions and one-time purchases are eligible for a refund within <strong>7 days</strong> of purchase, provided you have not used the Premium features.
             </p>
 
-            <h3>2. The "She Said No" Clause</h3>
+            <h2>2. How to Request a Refund</h2>
             <p>
-                We cannot refund you if your partner says no. We provide the digital tools; you provide the rizz.
-                Our "Impossible Form" is powerful, but it is not mind control.
+                Email <a href="mailto:billing@kihumba.com" className="underline">billing@kihumba.com</a> with your order ID and reason for the refund. We'll process it within 5 business days.
             </p>
 
-            <h3>3. Donations</h3>
+            <h2>3. Exceptions</h2>
+            <p>Refunds are <strong>not available</strong> for:</p>
+            <ul>
+                <li>Donations (those are gifts of love, not transactions).</li>
+                <li>If your partner said "No" anyway. We provide the tools, not the magic.</li>
+                <li>If you've already used Premium themes, mechanics, or analytics.</li>
+            </ul>
+
+            <h2>4. Chargebacks</h2>
             <p>
-                "Buy Me a Coffee" donations are non-refundable gifts. Thank you for supporting independent developers!
+                If you initiate a chargeback instead of contacting us, your account may be suspended and further Premium access revoked.
             </p>
 
-            <h3>4. Processing</h3>
+            <h2>5. Contact</h2>
             <p>
-                Refunds are processed via Stripe and typically take 5-10 business days to appear on your statement.
+                Questions? <a href="mailto:billing@kihumba.com" className="underline">billing@kihumba.com</a>
             </p>
+
+            <p className="text-sm text-gray-400 mt-8">Last updated: February 2026</p>
         </LegalLayout>
     );
 }

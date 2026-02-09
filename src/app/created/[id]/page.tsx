@@ -1,245 +1,494 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import { doc, onSnapshot } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { doc, getDoc, collection, getDocs, query, orderBy, limit, collectionGroup } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
-import { onAuthStateChanged } from 'firebase/auth';
-import { TrapData } from '@/types';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Copy, Check, ExternalLink, CheckCircle } from 'lucide-react';
-
-import { motion } from 'framer-motion';
-import { useRef } from 'react';
-import { collection, query, orderBy, limit } from 'firebase/firestore';
-import { Users, Globe, Clock, Smartphone, LayoutDashboard, History, MessageCircle, Heart } from 'lucide-react';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { TrapData, AnalyticsSession } from '@/types';
+import { Loader2, Heart, Copy, CheckCircle, Share2, Eye, Monitor, Smartphone, Tablet, Globe, MousePointer, Clock, Activity, RefreshCw, XCircle, ThumbsUp, HelpCircle, MapPin, ShieldAlert, Lock, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { NeoBrutalBackground } from '@/components/ui/NeoBrutalBackground';
+import { motion, AnimatePresence } from 'framer-motion';
+
+interface ActivityLogItem {
+    id: string;
+    type: string;
+    timestamp: number;
+    metadata?: Record<string, unknown>;
+    sessionId?: string;
+}
 
 export default function CreatedPage() {
     const params = useParams();
+    const router = useRouter();
     const id = params?.id as string;
+    const [user, setUser] = useState<User | null>(null);
     const [data, setData] = useState<TrapData | null>(null);
-    const [sessions, setSessions] = useState<any[]>([]);
+    const [sessions, setSessions] = useState<AnalyticsSession[]>([]);
+    const [activityLog, setActivityLog] = useState<ActivityLogItem[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [authLoading, setAuthLoading] = useState(true);
     const [copied, setCopied] = useState(false);
-
-    // Fetch Trap Data & Sessions
-
-    // ... (component start)
-    const [user, setUser] = useState<any>(null);
-
-    // Auth Listener
-    useEffect(() => {
-        const unsub = onAuthStateChanged(auth, (u) => {
-            setUser(u);
-        });
-        return () => unsub();
-    }, []);
-
-    // Fetch Trap Data & Sessions
-    useEffect(() => {
-        if (!id) return;
-
-        // Trap Doc Listener
-        const unsubTrap = onSnapshot(doc(db, "traps", id), (doc) => {
-            if (doc.exists()) setData(doc.data() as TrapData);
-        });
-        return () => unsubTrap();
-    }, [id]);
-
-    // Sessions Listener (Only if authorized)
-    useEffect(() => {
-        if (!id || !data || !user) return;
-
-        // Security check
-        if (data.creatorId !== user.uid) {
-            console.warn("User is not the creator, skipping analytics.");
-            return;
-        }
-
-        const q = query(collection(db, "traps", id, "sessions"), orderBy("createdAt", "desc"), limit(50));
-        const unsubSessions = onSnapshot(q, (snapshot) => {
-            const sess = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-            setSessions(sess);
-        }, (error) => {
-            console.error("Analytics permission denied", error);
-        });
-
-        return () => unsubSessions();
-    }, [id, data, user]);
+    const [refreshing, setRefreshing] = useState(false);
+    const [permissionError, setPermissionError] = useState(false);
 
     const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/share/${id}` : '';
 
-    const copyToClipboard = () => {
-        navigator.clipboard.writeText(shareUrl);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+    // Check authentication first
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+            setAuthLoading(false);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    const fetchData = async () => {
+        if (!id || !user) return;
+
+        try {
+            // Fetch trap data
+            const docRef = doc(db, "traps", id);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const trapData = docSnap.data() as TrapData;
+
+                // Verify ownership
+                if (trapData.creatorId !== user.uid) {
+                    setPermissionError(true);
+                    setLoading(false);
+                    return;
+                }
+
+                setData(trapData);
+            } else {
+                setLoading(false);
+                return;
+            }
+
+            // Fetch sessions (analytics)
+            const sessionsRef = collection(db, "traps", id, "sessions");
+            const sessionsSnap = await getDocs(query(sessionsRef, orderBy("startTime", "desc"), limit(50)));
+            const sessionsData = sessionsSnap.docs.map(d => ({ ...d.data(), id: d.id } as AnalyticsSession & { id: string }));
+            setSessions(sessionsData);
+
+            // Fetch events from ALL sessions and aggregate
+            const allEvents: ActivityLogItem[] = [];
+            for (const session of sessionsData.slice(0, 20)) { // Limit to recent 20 sessions
+                try {
+                    const eventsRef = collection(db, "traps", id, "sessions", session.id, "events");
+                    const eventsSnap = await getDocs(query(eventsRef, orderBy("timestamp", "desc"), limit(10)));
+                    const sessionEvents = eventsSnap.docs.map(d => ({
+                        ...d.data(),
+                        id: d.id,
+                        sessionId: session.id
+                    } as ActivityLogItem));
+                    allEvents.push(...sessionEvents);
+                } catch {
+                    // Skip sessions we can't read
+                }
+            }
+
+            // Sort all events by timestamp descending
+            allEvents.sort((a, b) => b.timestamp - a.timestamp);
+            setActivityLog(allEvents.slice(0, 50)); // Keep top 50
+
+        } catch (error) {
+            console.error('Error fetching trap data:', error);
+            setPermissionError(true);
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
+        }
     };
 
-    // Calculate Aggregates
-    const uniqueCountries = new Set(sessions.map(s => s.country).filter(Boolean)).size;
-    const uniqueDevices = new Set(sessions.map(s => s.userAgent || 'unknown')).size; // Simple approx
-    const totalViews = sessions.length;
-    const avgDuration = sessions.reduce((acc, curr) => acc + (curr.duration || 0), 0) / (sessions.length || 1);
+    useEffect(() => {
+        if (!authLoading && user) {
+            fetchData();
+        } else if (!authLoading && !user) {
+            router.push('/login');
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id, user, authLoading]);
 
-    if (!data) return (
-        <div className="flex items-center justify-center min-h-screen bg-pink-50 text-pink-600 font-bold animate-pulse">
-            Fetching Trap details...
-        </div>
-    );
+    const handleRefresh = () => {
+        setRefreshing(true);
+        fetchData();
+    };
 
-    return (
-        <main className="min-h-screen bg-gradient-to-br from-pink-50 to-rose-100 p-4 md:p-8 flex flex-col gap-8 max-w-5xl mx-auto">
+    const copyLink = async () => {
+        try {
+            await navigator.clipboard.writeText(shareUrl);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch {
+            alert('Failed to copy link');
+        }
+    };
 
-            {/* Header / Success Banner */}
-            <div className="text-center space-y-4 py-8">
-                <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className="inline-flex items-center justify-center gap-3 bg-white px-8 py-4 rounded-full shadow-xl border border-pink-100"
-                >
-                    <CheckCircle className="w-8 h-8 text-green-500" />
-                    <h1 className="text-3xl font-black text-rose-600 tracking-tight font-display">It's Ready!</h1>
-                </motion.div>
-                <p className="text-rose-900/60 font-medium">Your trap for <span className="font-bold text-rose-600">{data.partnerName}</span> is live.</p>
-            </div>
+    // Analytics calculations
+    const totalViews = data?.stats?.views || sessions.length;
+    const totalAttempts = data?.stats?.attempts || sessions.reduce((acc, s) => acc + (s.clickCount || 0), 0);
+    const totalHovers = data?.stats?.hovers || sessions.reduce((acc, s) => acc + (s.hoverCount || 0), 0);
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+    // Device breakdown
+    const deviceBreakdown = sessions.reduce((acc, s) => {
+        const device = s.deviceType || 'unknown';
+        acc[device] = (acc[device] || 0) + 1;
+        return acc;
+    }, {} as Record<string, number>);
 
-                {/* Available Actions / Link Card */}
-                <div className="lg:col-span-1 space-y-6">
-                    <Card className="p-6 space-y-6 bg-white/80 backdrop-blur shadow-xl border-white/50">
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-2">
-                                <ExternalLink className="w-3 h-3" /> Share Link
-                            </label>
-                            <div className="flex gap-2">
-                                <input
-                                    readOnly
-                                    value={shareUrl}
-                                    className="flex-1 bg-pink-50/50 border border-pink-100 rounded-lg px-3 py-3 text-sm text-rose-900 font-medium outline-none focus:ring-2 focus:ring-rose-200"
-                                />
-                                <Button size="icon" onClick={copyToClipboard} className="bg-rose-500 hover:bg-rose-600 text-white shrink-0">
-                                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                                </Button>
-                            </div>
+    // Country breakdown
+    const countryBreakdown = sessions.reduce((acc, s) => {
+        const country = s.country || 'Unknown';
+        acc[country] = (acc[country] || 0) + 1;
+        return acc;
+    }, {} as Record<string, number>);
+
+    // Outcome calculation
+    const completedSessions = sessions.filter(s => s.endTime);
+    const yesCount = activityLog.filter(e => e.type === 'click_yes').length;
+    const abandonedCount = sessions.length - yesCount;
+
+    const getEventIcon = (type: string) => {
+        switch (type) {
+            case 'view': return <Eye className="w-4 h-4 text-blue-500" />;
+            case 'hover_no': return <MousePointer className="w-4 h-4 text-orange-500" />;
+            case 'click_no': return <XCircle className="w-4 h-4 text-red-500" />;
+            case 'click_yes': return <ThumbsUp className="w-4 h-4 text-green-500" />;
+            case 'attempt_security': return <HelpCircle className="w-4 h-4 text-purple-500" />;
+            default: return <Activity className="w-4 h-4 text-gray-500" />;
+        }
+    };
+
+    const getEventLabel = (type: string) => {
+        switch (type) {
+            case 'view': return 'Page View';
+            case 'hover_no': return 'Hovered "No"';
+            case 'click_no': return 'Tried to click "No"';
+            case 'click_yes': return 'Clicked "Yes" 💕';
+            case 'attempt_security': return 'Security question attempt';
+            default: return type;
+        }
+    };
+
+    const getDeviceIcon = (device: string) => {
+        switch (device) {
+            case 'mobile': return <Smartphone className="w-4 h-4" />;
+            case 'tablet': return <Tablet className="w-4 h-4" />;
+            default: return <Monitor className="w-4 h-4" />;
+        }
+    };
+
+    if (loading || authLoading) {
+        return (
+            <NeoBrutalBackground>
+                <div className="flex h-screen items-center justify-center">
+                    <Loader2 className="animate-spin text-[var(--primary)] w-12 h-12" />
+                </div>
+            </NeoBrutalBackground>
+        );
+    }
+
+    if (permissionError) {
+        return (
+            <NeoBrutalBackground>
+                <div className="flex h-screen items-center justify-center p-4">
+                    <div className="text-center space-y-4 p-8 bg-white border-[3px] border-red-500 rounded-3xl shadow-[8px_8px_0_0_#ef4444] max-w-md">
+                        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+                            <ShieldAlert className="w-8 h-8 text-red-500" />
                         </div>
-
-                        <div className="pt-4 border-t border-pink-50 space-y-3">
-                            <Button className="w-full bg-white border-2 border-rose-100 text-rose-600 hover:bg-rose-50 font-bold" variant="outline" onClick={() => window.open(shareUrl, '_blank')}>
-                                Test It Yourself <ExternalLink className="ml-2 w-4 h-4" />
-                            </Button>
-                            <Link href="/dashboard" className="block w-full">
-                                <Button className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-lg shadow-rose-200" size="lg">
-                                    <LayoutDashboard className="mr-2 w-4 h-4" /> Monitor on Dashboard
-                                </Button>
+                        <h1 className="text-2xl font-bold text-red-600">Access Denied</h1>
+                        <p className="text-gray-600">You don't have permission to view this trap's analytics. Only the creator can access this page.</p>
+                        <div className="pt-4 space-x-3">
+                            <Link href="/dashboard">
+                                <Button className="bg-gray-900 text-white">Go to Dashboard</Button>
                             </Link>
                         </div>
-                    </Card>
-
-                    {/* Quick Stats Summary */}
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-white/60 p-4 rounded-2xl border border-white text-center">
-                            <div className="text-3xl font-black text-rose-600">{data.stats?.attempts || 0}</div>
-                            <div className="text-[10px] font-bold text-rose-400 uppercase tracking-widest">Refusals</div>
-                        </div>
-                        <div className="bg-white/60 p-4 rounded-2xl border border-white text-center">
-                            <div className={`text-xl font-black ${data.status === 'completed' ? 'text-green-500' : 'text-rose-400'}`}>
-                                {data.status === 'completed' ? 'CAPTURED' : 'PENDING'}
-                            </div>
-                            <div className="text-[10px] font-bold text-rose-400 uppercase tracking-widest">Status</div>
-                        </div>
                     </div>
-
-                    {/* Partner Note Display */}
-                    {data.responseNote && (
-                        <div className="bg-white/90 p-6 rounded-2xl shadow-xl border border-pink-200 space-y-2 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-4 opacity-10">
-                                <Heart className="w-24 h-24 text-rose-500 fill-rose-500" />
-                            </div>
-                            <div className="text-xs font-bold text-rose-400 uppercase tracking-widest flex items-center gap-2">
-                                <MessageCircle className="w-4 h-4" /> Message from {data.partnerName}
-                            </div>
-                            <p className="text-xl font-medium text-rose-900 italic font-display">"{data.responseNote}"</p>
-                        </div>
-                    )}
                 </div>
+            </NeoBrutalBackground>
+        );
+    }
 
-                {/* Realtime Analytics Feed */}
-                <div className="lg:col-span-2 space-y-6">
+    if (!data) {
+        return (
+            <NeoBrutalBackground>
+                <div className="flex h-screen items-center justify-center">
+                    <div className="text-center space-y-4 p-8 bg-white border-[3px] border-black rounded-3xl shadow-[8px_8px_0_0_#000]">
+                        <Heart className="w-16 h-16 text-gray-300 mx-auto" />
+                        <h1 className="text-2xl font-bold">Trap Not Found</h1>
+                        <p className="text-gray-500">This trap may have been deleted or doesn't exist.</p>
+                        <Link href="/tools/trap">
+                            <Button className="bg-[var(--primary)] text-white border-2 border-black">Create a New Trap</Button>
+                        </Link>
+                    </div>
+                </div>
+            </NeoBrutalBackground>
+        );
+    }
+
+    return (
+        <NeoBrutalBackground>
+            <div className="min-h-screen p-4 pt-24 pb-12">
+                <div className="max-w-6xl mx-auto space-y-6">
+
+                    {/* Header */}
+                    <motion.div
+                        initial={{ y: -20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        className="bg-white border-[4px] border-black rounded-3xl shadow-[8px_8px_0_0_#000] p-6"
+                    >
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <CheckCircle className="w-6 h-6 text-green-500" />
+                                    <span className="text-sm font-bold uppercase text-green-600">Trap Active</span>
+                                </div>
+                                <h1 className="text-3xl font-display text-black">
+                                    {data.partnerName ? `Trap for ${data.partnerName}` : 'Your Valentine Trap'}
+                                </h1>
+                                <p className="text-gray-500 mt-1 italic">"{data.message}"</p>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                <button
+                                    onClick={handleRefresh}
+                                    disabled={refreshing}
+                                    className="px-4 py-2 bg-gray-100 text-black font-bold rounded-xl border-2 border-black hover:bg-gray-200 transition-colors flex items-center gap-2"
+                                >
+                                    <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+                                    Refresh
+                                </button>
+                                <Link href={`/share/${id}`}>
+                                    <button className="px-4 py-2 bg-blue-500 text-white font-bold rounded-xl border-2 border-black hover:bg-blue-600 transition-colors flex items-center gap-2">
+                                        <Eye className="w-4 h-4" />
+                                        Preview
+                                    </button>
+                                </Link>
+                            </div>
+                        </div>
+
+                        {/* Share Link */}
+                        <div className="mt-4 flex gap-2">
+                            <input
+                                type="text"
+                                readOnly
+                                value={shareUrl}
+                                className="flex-1 px-4 py-3 bg-gray-100 border-2 border-black rounded-xl font-mono text-sm"
+                            />
+                            <button
+                                onClick={copyLink}
+                                className="px-6 py-3 bg-[var(--primary)] text-white font-bold rounded-xl border-2 border-black shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] hover:-translate-y-1 transition-all flex items-center gap-2"
+                            >
+                                {copied ? <CheckCircle className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                                {copied ? 'Copied!' : 'Copy Link'}
+                            </button>
+                        </div>
+                    </motion.div>
+
+                    {/* Stats Grid */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <StatsCard icon={Users} label="Total Views" value={totalViews} color="text-blue-500" />
-                        <StatsCard icon={Globe} label="Countries" value={uniqueCountries} color="text-indigo-500" />
-                        <StatsCard icon={Smartphone} label="Devices" value={uniqueDevices} color="text-purple-500" />
-                        <StatsCard icon={Clock} label="Avg Time" value={`${Math.round(avgDuration)}s`} color="text-orange-500" />
+                        {[
+                            { label: 'Total Views', value: totalViews, icon: <Eye className="w-6 h-6" />, color: 'bg-blue-100 text-blue-600' },
+                            { label: 'Reject Attempts', value: totalAttempts, icon: <XCircle className="w-6 h-6" />, color: 'bg-red-100 text-red-600' },
+                            { label: '"No" Hovers', value: totalHovers, icon: <MousePointer className="w-6 h-6" />, color: 'bg-orange-100 text-orange-600' },
+                            { label: 'Said Yes!', value: yesCount, icon: <ThumbsUp className="w-6 h-6" />, color: 'bg-green-100 text-green-600' },
+                        ].map((stat, i) => (
+                            <motion.div
+                                key={stat.label}
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ delay: i * 0.1 }}
+                                className="bg-white border-[3px] border-black rounded-2xl p-4 shadow-[4px_4px_0_0_#000]"
+                            >
+                                <div className={`w-12 h-12 rounded-xl ${stat.color} flex items-center justify-center mb-3`}>
+                                    {stat.icon}
+                                </div>
+                                <div className="text-3xl font-black">{stat.value}</div>
+                                <div className="text-sm font-bold text-gray-500 uppercase">{stat.label}</div>
+                            </motion.div>
+                        ))}
                     </div>
 
-                    <Card className="bg-white/80 backdrop-blur shadow-xl border-white/50 overflow-hidden">
-                        <div className="p-4 border-b border-pink-50 flex items-center gap-2 bg-pink-50/30">
-                            <History className="w-4 h-4 text-rose-400" />
-                            <h3 className="font-bold text-rose-900 text-sm uppercase tracking-wider">Live Activity Log</h3>
-                        </div>
-                        <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
-                            {sessions.length === 0 ? (
-                                <div className="p-8 text-center text-rose-300 italic text-sm">
-                                    No visitors yet... send the link!
+                    {/* Two Column Layout */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                        {/* Activity Log */}
+                        <motion.div
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            className="bg-white border-[3px] border-black rounded-2xl shadow-[6px_6px_0_0_#000] overflow-hidden"
+                        >
+                            <div className="p-4 border-b-2 border-black bg-gray-50">
+                                <div className="flex items-center gap-2">
+                                    <Activity className="w-5 h-5 text-[var(--primary)]" />
+                                    <h2 className="font-bold uppercase text-sm tracking-wider">Activity Log</h2>
                                 </div>
-                            ) : (
-                                <table className="w-full text-sm text-left">
-                                    <thead className="text-xs text-rose-400 uppercase bg-pink-50/50 sticky top-0 backdrop-blur-sm">
-                                        <tr>
-                                            <th className="px-6 py-3 font-bold">Time</th>
-                                            <th className="px-6 py-3 font-bold">Location</th>
-                                            <th className="px-6 py-3 font-bold">Device</th>
-                                            <th className="px-6 py-3 font-bold text-right">Attempts</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-pink-50">
-                                        {sessions.map((session) => (
-                                            <tr key={session.id} className="hover:bg-pink-50/50 transition-colors">
-                                                <td className="px-6 py-3 text-rose-800">
-                                                    {new Date(session.createdAt?.seconds * 1000 || Date.now()).toLocaleTimeString()}
-                                                </td>
-                                                <td className="px-6 py-3">
-                                                    <span className="inline-flex items-center gap-1 bg-indigo-50 text-indigo-700 px-2 py-1 rounded text-xs font-bold">
-                                                        {session.country === 'Unknown' ? 'Unknown 🌍' : session.country}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-3 text-rose-600">
-                                                    <div className="flex flex-col">
-                                                        <span className="font-medium">{session.os}</span>
-                                                        <span className="text-[10px] opacity-70">{session.browser}</span>
+                            </div>
+                            <div className="max-h-[400px] overflow-y-auto divide-y divide-gray-100">
+                                {activityLog.length === 0 ? (
+                                    <div className="p-8 text-center text-gray-400">
+                                        <Clock className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                                        <p>No activity yet. Share your trap!</p>
+                                    </div>
+                                ) : (
+                                    activityLog.map((event, i) => (
+                                        <motion.div
+                                            key={event.id}
+                                            initial={{ opacity: 0, x: -10 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: i * 0.05 }}
+                                            className={`p-4 flex items-start gap-3 hover:bg-gray-50 transition-colors ${event.type === 'click_yes' ? 'bg-green-50' : ''}`}
+                                        >
+                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${event.type === 'click_yes' ? 'bg-green-100' :
+                                                event.type === 'attempt_security' ? (event.metadata?.success ? 'bg-green-100' : 'bg-red-100') :
+                                                    'bg-gray-100'
+                                                }`}>
+                                                {getEventIcon(event.type)}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-2 flex-wrap">
+                                                    <span className="font-bold text-sm">{getEventLabel(event.type)}</span>
+                                                    {event.type === 'attempt_security' && (
+                                                        <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase font-black ${event.metadata?.success
+                                                            ? 'bg-green-200 text-green-800'
+                                                            : 'bg-red-200 text-red-800'
+                                                            }`}>
+                                                            {event.metadata?.success ? '✓ Correct' : '✗ Wrong'}
+                                                        </span>
+                                                    )}
+                                                    {event.type === 'click_yes' && (
+                                                        <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-black bg-pink-200 text-pink-800">
+                                                            💕 Success!
+                                                        </span>
+                                                    )}
+                                                </div>
+
+
+                                                {event.type === 'attempt_security' && event.metadata?.input ? (
+                                                    <div className="mt-1 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded font-mono truncate">
+                                                        Answered: &quot;{String(event.metadata.input)}&quot;
                                                     </div>
-                                                </td>
-                                                <td className="px-6 py-3 text-right font-bold text-rose-900">
-                                                    {session.securityAttempts > 0 && (
-                                                        <span className="mr-2 text-xs bg-red-100 text-red-600 px-1 rounded">🔒 {session.securityAttempts}</span>
-                                                    )}
-                                                    {session.clickCount > 0 ? (
-                                                        <span className="text-red-500">{session.clickCount} 🚫</span>
-                                                    ) : (
-                                                        <span className="text-gray-300">-</span>
-                                                    )}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            )}
+                                                ) : null}
+
+                                                {event.type === 'click_yes' && typeof event.metadata?.attempts === 'number' ? (
+                                                    <div className="mt-1 text-xs text-gray-500">
+                                                        After {event.metadata.attempts} &quot;No&quot; attempts
+                                                    </div>
+                                                ) : null}
+
+                                                <div className="text-xs text-gray-400 mt-1">
+                                                    {new Date(event.timestamp).toLocaleString()}
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    ))
+                                )}
+                            </div>
+                        </motion.div>
+
+                        {/* Devices & Countries */}
+                        <div className="space-y-6">
+                            {/* Devices */}
+                            <motion.div
+                                initial={{ x: 20, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                className="bg-white border-[3px] border-black rounded-2xl shadow-[6px_6px_0_0_#000] overflow-hidden"
+                            >
+                                <div className="p-4 border-b-2 border-black bg-gray-50">
+                                    <div className="flex items-center gap-2">
+                                        <Monitor className="w-5 h-5 text-[var(--primary)]" />
+                                        <h2 className="font-bold uppercase text-sm tracking-wider">Devices</h2>
+                                    </div>
+                                </div>
+                                <div className="p-4 space-y-3">
+                                    {Object.keys(deviceBreakdown).length === 0 ? (
+                                        <p className="text-gray-400 text-center py-4">No device data yet</p>
+                                    ) : (
+                                        Object.entries(deviceBreakdown).map(([device, count]) => (
+                                            <div key={device} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200">
+                                                <div className="flex items-center gap-2">
+                                                    {getDeviceIcon(device)}
+                                                    <span className="font-bold capitalize">{device}</span>
+                                                </div>
+                                                <span className="bg-[var(--primary)] text-white px-3 py-1 rounded-full text-sm font-bold">
+                                                    {count}
+                                                </span>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </motion.div>
+
+                            {/* Countries */}
+                            <motion.div
+                                initial={{ x: 20, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                transition={{ delay: 0.1 }}
+                                className="bg-white border-[3px] border-black rounded-2xl shadow-[6px_6px_0_0_#000] overflow-hidden"
+                            >
+                                <div className="p-4 border-b-2 border-black bg-gray-50">
+                                    <div className="flex items-center gap-2">
+                                        <Globe className="w-5 h-5 text-[var(--primary)]" />
+                                        <h2 className="font-bold uppercase text-sm tracking-wider">Countries</h2>
+                                    </div>
+                                </div>
+                                <div className="p-4 space-y-3 max-h-[200px] overflow-y-auto">
+                                    {Object.keys(countryBreakdown).length === 0 ? (
+                                        <p className="text-gray-400 text-center py-4">No location data yet</p>
+                                    ) : (
+                                        Object.entries(countryBreakdown)
+                                            .sort(([, a], [, b]) => b - a)
+                                            .map(([country, count]) => (
+                                                <div key={country} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200">
+                                                    <div className="flex items-center gap-2">
+                                                        <MapPin className="w-4 h-4 text-gray-400" />
+                                                        <span className="font-bold">{country}</span>
+                                                    </div>
+                                                    <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                                        {count}
+                                                    </span>
+                                                </div>
+                                            ))
+                                    )}
+                                </div>
+                            </motion.div>
                         </div>
-                    </Card>
+                    </div>
+
+                    {/* Outcome Summary */}
+                    <motion.div
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        className="bg-gradient-to-r from-pink-100 to-red-100 border-[3px] border-black rounded-2xl shadow-[6px_6px_0_0_#000] p-6"
+                    >
+                        <h2 className="font-bold uppercase text-sm tracking-wider mb-4 flex items-center gap-2">
+                            <Heart className="w-5 h-5 text-[var(--primary)]" />
+                            Outcome Summary
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="bg-white/80 backdrop-blur-sm p-4 rounded-xl border-2 border-black text-center">
+                                <ThumbsUp className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                                <div className="text-2xl font-black text-green-600">{yesCount}</div>
+                                <div className="text-sm font-bold text-gray-500">Said YES! 💕</div>
+                            </div>
+                            <div className="bg-white/80 backdrop-blur-sm p-4 rounded-xl border-2 border-black text-center">
+                                <HelpCircle className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                                <div className="text-2xl font-black text-gray-600">{abandonedCount}</div>
+                                <div className="text-sm font-bold text-gray-500">Left Without Answer</div>
+                            </div>
+                            <div className="bg-white/80 backdrop-blur-sm p-4 rounded-xl border-2 border-black text-center">
+                                <XCircle className="w-8 h-8 text-red-400 mx-auto mb-2" />
+                                <div className="text-2xl font-black text-red-600">{totalAttempts}</div>
+                                <div className="text-sm font-bold text-gray-500">Reject Attempts</div>
+                            </div>
+                        </div>
+                    </motion.div>
+
                 </div>
             </div>
-        </main>
+        </NeoBrutalBackground>
     );
 }
-
-const StatsCard = ({ icon: Icon, label, value, color }: any) => (
-    <div className="bg-white p-4 rounded-2xl shadow-sm border border-pink-100 flex flex-col items-center justify-center gap-2 text-center">
-        <Icon className={`w-5 h-5 ${color}`} />
-        <div>
-            <div className="text-2xl font-black text-rose-900">{value}</div>
-            <div className="text-[10px] font-bold text-rose-300 uppercase tracking-widest">{label}</div>
-        </div>
-    </div>
-);

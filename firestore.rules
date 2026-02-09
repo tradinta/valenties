@@ -7,25 +7,21 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // Helper function for admin check
+    function isAdmin() {
+      return isSignedIn() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.tier == 'admin';
+    }
+
     match /traps/{trapId} {
-      // Anyone can read a trap (if they have the ID)
       allow read: if true;
-      
-      // Only signed-in users can create traps
       allow create: if isSignedIn();
-      
-      // Allow Creators to update their own traps
-      // OR Allow Anonymous users to update 'stats' (increment counters like views/attempts)
       allow update: if (isSignedIn() && resource.data.creatorId == request.auth.uid) || 
-                   // Allow anyone to update stats (for views) AND responseNote
                    (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stats', 'responseNote']));
 
-      // Sessions Subcollection (Tracking)
       match /sessions/{sessionId} {
-        // Allow anyone (anonymous tracking) to create/update sessions
         allow create, update: if true;
-        
-        // Allow ONLY the creator to read analytics
         allow read: if isSignedIn() && get(/databases/$(database)/documents/traps/$(trapId)).data.creatorId == request.auth.uid;
         
         match /events/{eventId} {
@@ -33,6 +29,64 @@ service cloud.firestore {
             allow read: if isSignedIn() && get(/databases/$(database)/documents/traps/$(trapId)).data.creatorId == request.auth.uid;
         }
       }
+    }
+
+    // Decisions - Creator full access
+    match /decisions/{decisionId} {
+        allow read, write: if isSignedIn() && 
+            (resource == null || resource.data.creatorId == request.auth.uid);
+    }
+
+    // Polls
+    match /polls/{pollId} {
+        allow read: if true;
+        allow create: if isSignedIn();
+        // Creator can fully update/delete
+        allow delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
+        
+        // Voting, Commenting & View tracking logic
+        // Allow any authenticated user to update vote-related fields
+        allow update: if isSignedIn() && (
+            // Creator full access
+            resource.data.creatorId == request.auth.uid || 
+            // Voters/Commenters can only update specific fields
+            request.resource.data.diff(resource.data).affectedKeys()
+                .hasOnly(['options', 'totalVotes', 'analytics', 'comments', 'views'])
+        );
+
+        // Vote tracking subcollection - any auth user can track their vote
+        match /votes/{odUserId} {
+            allow read: if true;
+            allow write: if isSignedIn() && request.auth.uid == odUserId;
+        }
+    }
+
+    // Whispers - Public read/create, Creator delete, update for votes/comments
+    match /whispers/{whisperId} {
+        allow read: if true;
+        allow create: if true;
+        // Allow updates only for vote counts and comments array
+        allow update: if request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['upvotes', 'downvotes', 'comments']);
+        allow delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
+        
+        // Votes subcollection - users can only manage their own vote
+        match /votes/{odUid} {
+            allow read: if true;
+            allow write: if isSignedIn() && request.auth.uid == odUid;
+        }
+    }
+
+    // Users - Owner can read/write own profile
+    match /users/{userId} {
+        allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+        allow write: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+    }
+
+    // Admin Settings - Everyone can read pricing, only Admin can write
+    match /admin_settings/{settingId} {
+        allow read: if true;
+        allow write: if isAdmin();
     }
   }
 }
