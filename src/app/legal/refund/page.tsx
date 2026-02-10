@@ -17,8 +17,8 @@ export default function RefundPolicy() {
             <h2>3. Exceptions</h2>
             <p>Refunds are <strong>not available</strong> for:</p>
             <ul>
-                <li>Donations (those are gifts of love, not transactions).</li>
-                <li>If your partner said "No" anyway. We provide the tools, not the magic.</li>
+                <li>Donations (those are gifts of chaos, not transactions).</li>
+                <li>If your target didn't fall for it. We provide the tools, not the magic.</li>
                 <li>If you've already used Premium themes, mechanics, or analytics.</li>
             </ul>
 

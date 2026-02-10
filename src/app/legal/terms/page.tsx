@@ -16,12 +16,12 @@ export default function TermsOfService() {
         <LegalLayout title="Terms of Service" icon={FileText}>
             <h2>1. Acceptance of Terms</h2>
             <p>
-                By using <strong>Kihumba</strong> (the "Service"), you agree to these Terms of Service. If you disagree, please close this tab and find a less chaotic way to ask someone out.
+                By using <strong>Kihumba</strong> (the "Service"), you agree to these Terms of Service. If you disagree, please close this tab and find a less chaotic way to prank people.
             </p>
 
             <h2>2. Description of Service</h2>
             <p>
-                Kihumba provides a platform for creating interactive, playful "Valentine's Trap" experiences. The "No" button may or may not cooperate, and we take no responsibility for the emotional rollercoaster that ensues.
+                Kihumba provides a platform for creating interactive, playful "Funny Trap" experiences. The "No" button may or may not cooperate, and we take no responsibility for the frustration that ensues.
             </p>
 
             <h2>3. User Conduct</h2>

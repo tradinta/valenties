@@ -16,7 +16,7 @@ export default function PrivacyPolicy() {
         <LegalLayout title="Privacy Policy" icon={Shield}>
             <h2>1. Introduction</h2>
             <p>
-                At <strong>Kihumba</strong>, we respect your privacy (and your partner's). This policy explains what data we collect and how we use it.
+                At <strong>Kihumba</strong>, we respect your privacy. This policy explains what data we collect and how we use it to provide the chaos engine.
             </p>
 
             <h2>2. Data We Collect</h2>
@@ -30,8 +30,8 @@ export default function PrivacyPolicy() {
             <h2>3. How We Use Your Data</h2>
             <ul>
                 <li>To provide and improve the Service.</li>
-                <li>To display your traps and poll results.</li>
-                <li>To send transactional emails (e.g., "Someone said Yes!").</li>
+                <li>To display your funny traps and poll results.</li>
+                <li>To send transactional emails (e.g., "Trap Spring Alert").</li>
                 <li>For aggregate analytics (we don't sell individual data).</li>
             </ul>
 

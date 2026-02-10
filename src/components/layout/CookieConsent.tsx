@@ -30,24 +30,23 @@ export const CookieConsent = () => {
                     exit={{ y: 100, opacity: 0 }}
                     className="fixed bottom-4 right-4 z-[100] max-w-sm w-full"
                 >
-                    <div className="bg-white border-[3px] border-black p-4 rounded-xl shadow-[6px_6px_0_0_#000] relative overflow-hidden">
-
+                    <div className="bg-card border-[3px] border-border p-4 rounded-xl shadow-brutal relative overflow-hidden transition-colors duration-500">
                         <button
                             onClick={() => setIsVisible(false)}
-                            className="absolute top-2 right-2 text-gray-400 hover:text-black"
+                            className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
                         >
                             <X size={16} />
                         </button>
 
                         <div className="flex gap-4">
-                            <div className="shrink-0 w-10 h-10 bg-[#BC9F8B]/20 border-2 border-[#BC9F8B] rounded-lg flex items-center justify-center text-[#BC9F8B]">
+                            <div className="shrink-0 w-10 h-10 bg-primary/10 border-2 border-primary/20 rounded-lg flex items-center justify-center text-primary">
                                 <Cookie size={20} />
                             </div>
                             <div className="space-y-3">
                                 <div>
-                                    <h4 className="font-black text-sm uppercase">We use cookies</h4>
-                                    <p className="text-xs font-bold text-gray-500 leading-relaxed mt-1">
-                                        Just to count how many people say "Yes" and ensure the traps work. No creepy tracking.
+                                    <h4 className="font-black text-sm uppercase">Chaotic Cookies</h4>
+                                    <p className="text-xs font-bold text-muted-foreground leading-relaxed mt-1">
+                                        We use cookies to ensure the chaos engine runs smoothly and session data is tracked. No creepy stuff.
                                     </p>
                                 </div>
                                 <div className="flex gap-2">
