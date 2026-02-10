@@ -11,17 +11,36 @@ export const uploadImage = async (file: File): Promise<string | null> => {
 
     if (!cloudName) return null;
 
-    // 1. Get Signature
+    // 1. Get Signature & Check Limits
     const timestamp = Math.round((new Date).getTime() / 1000);
     const paramsToSign = {
         timestamp: timestamp,
     };
 
     try {
+        // Get ID token for rate limiting
+        const { getAuth } = await import('firebase/auth');
+        const auth = getAuth();
+        const token = await auth.currentUser?.getIdToken();
+
+        const headers: HeadersInit = {
+            'Content-Type': 'application/json'
+        };
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
         const signRes = await fetch('/api/cloudinary/sign', {
             method: 'POST',
+            headers,
             body: JSON.stringify({ paramsToSign })
         });
+
+        if (!signRes.ok) {
+            const error = await signRes.json();
+            throw new Error(error.error || "Upload failed");
+        }
+
         const { signature } = await signRes.json();
 
         if (!signature) throw new Error("Failed to get signature");

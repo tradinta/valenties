@@ -1,5 +1,15 @@
 import { FileText } from 'lucide-react';
 import { LegalLayout } from '@/components/layout/LegalLayout';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Terms of Service',
+    description: 'The rules of engagement for the chaos toolkit.',
+    openGraph: {
+        title: 'Terms of Service | Kihumba',
+        description: 'By using this site, you agree to let us have a little fun. Read the fine print.',
+    },
+};
 
 export default function TermsOfService() {
     return (

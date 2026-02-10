@@ -1,5 +1,15 @@
 import { Shield } from 'lucide-react';
 import { LegalLayout } from '@/components/layout/LegalLayout';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Privacy Policy',
+    description: 'How we respect your privacy and handle data at Kihumba.',
+    openGraph: {
+        title: 'Privacy Policy | Kihumba',
+        description: 'Plain English explanation of what data we collect and how we use it.',
+    },
+};
 
 export default function PrivacyPolicy() {
     return (

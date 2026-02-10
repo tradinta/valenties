@@ -1,294 +1,306 @@
 @import "tailwindcss";
 
-@theme {
-  --font-display: var(--font-vibes);
-  --font-heading: var(--font-playfair);
-  --font-script: var(--font-dancing);
-  --font-sans: var(--font-quicksand);
+/* ============================================
+   KIHUMBA DESIGN SYSTEM v2.0
+   ============================================
+   3 Unified Themes: Classic (default), Dark, Neon
+   All pages use CSS variables for consistency.
+   ============================================ */
 
-  /* Cosmos Bear Fonts */
-  --font-jakarta: var(--font-jakarta);
-  --font-fredoka: var(--font-fredoka);
+@theme {
+  /* Font Tokens */
+  --font-sans: var(--font-jakarta);
+  --font-display: var(--font-fredoka);
   --font-mono: var(--font-jetbrains);
 
+  /* Semantic Color Tokens */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
-
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-
   --color-primary-dark: var(--primary-dark);
-
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-
-  --color-code: var(--code);
-
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
-
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
 
+  /* Radius */
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
 
+  /* Shadows */
   --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
   --shadow-glow: 0 0 20px rgba(165, 216, 255, 0.6);
 }
 
-/* 
-   Valentine Laboratory Theme
-*/
+/* ============================================
+   THEME 1: CLASSIC VALENTINE (Default / Light)
+   Warm cream background, red accents, playful vibe
+   ============================================ */
 :root {
-  /* Core Palette */
-  --velvet: 348 100% 27%;
-  /* #8b0000 */
-  --rose: 349 100% 65%;
-  /* #ff4d6d */
-  --cream: 0 100% 98%;
-  /* #fff5f5 */
-  --gold: 46 65% 52%;
-  /* #d4af37 */
+  --background: #FFF9F0;
+  --foreground: #1a1817;
 
-  --background: var(--cream);
-  --foreground: var(--velvet);
-
-  --card: 0 0% 100%;
-  --card-foreground: var(--velvet);
-
-  --popover: 0 0% 100%;
-  --popover-foreground: var(--velvet);
-
-  --primary: var(--rose);
-  --primary-foreground: 0 0% 100%;
-
-  --secondary: var(--cream);
-  --secondary-foreground: var(--velvet);
-
-  --muted: 0 20% 96%;
-  --muted-foreground: 348 30% 40%;
-
-  --accent: 46 65% 52%;
-  /* Gold accent */
-  --accent-foreground: 0 0% 100%;
-
-  --destructive: 0 100% 50%;
-  --destructive-foreground: 0 0% 100%;
-
-  --border: 349 30% 90%;
-  --input: 349 30% 90%;
-  --ring: var(--rose);
-
-  --radius: 1.5rem;
-  /* Rounder UI */
-}
-
-.dark-romance {
-  --background: 340 90% 5%;
-  --foreground: 0 0% 98%;
-  --card: 340 80% 8%;
-  --card-foreground: 0 0% 98%;
-  --primary: 340 70% 40%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 340 60% 15%;
-  --secondary-foreground: 0 0% 98%;
-  --accent: 340 60% 15%;
-  --accent-foreground: 0 0% 98%;
-  --muted: 340 40% 10%;
-  --muted-foreground: 340 20% 70%;
-  --border: 340 50% 20%;
-  --input: 340 50% 20%;
-}
-
-.neon-love {
-  --background: 280 90% 5%;
-  --foreground: 0 0% 100%;
-  --primary: 320 100% 50%;
-  /* Neon Pink */
-  --primary-foreground: 0 0% 0%;
-  --secondary: 260 100% 60%;
-  /* Neon Purple */
-  --secondary-foreground: 0 0% 0%;
-  --accent: 260 80% 30%;
-  --accent-foreground: 0 0% 100%;
-  --ring: 320 100% 50%;
-}
-
-.pastel-dream {
-  --background: 210 100% 98%;
-  --foreground: 210 20% 30%;
-  --primary: 330 100% 85%;
-  /* Pastel Pink */
-  --primary-foreground: 330 40% 30%;
-  --secondary: 180 80% 90%;
-  /* Mint */
-  --secondary-foreground: 180 40% 30%;
-  --accent: 180 30% 95%;
-  --accent-foreground: 210 20% 40%;
-}
-
-.obsidian {
-  --background: 220 15% 10%;
-  /* Dark Charcoal */
-  --foreground: 45 20% 90%;
-  /* Off-white */
-  --card: 220 15% 13%;
-  --card-foreground: 45 20% 90%;
-  --primary: 45 80% 60%;
-  /* Gold */
-  --primary-foreground: 220 15% 10%;
-  --secondary: 220 10% 20%;
-  --secondary-foreground: 45 20% 90%;
-  --accent: 45 80% 60%;
-  --accent-foreground: 220 15% 10%;
-  --muted: 220 15% 15%;
-  --muted-foreground: 220 10% 60%;
-  --border: 45 30% 20%;
-  --input: 220 15% 15%;
-  --ring: 45 80% 60%;
-}
-
-.cosmos-bear {
-  --background: #FFFBF5;
-  --foreground: #2D3436;
-
-  --primary: #FF9EB5;
+  --primary: #FF0040;
   --primary-foreground: #FFFFFF;
-  --primary-dark: #FF7596;
+  --primary-dark: #CC0033;
 
-  --secondary: #A5D8FF;
-  --secondary-foreground: #2D3436;
+  --secondary: #FFE8EC;
+  --secondary-foreground: #1a1817;
 
   --accent: #FFD166;
-  --accent-foreground: #2D3436;
-
-  --muted: #636E72;
-  --muted-foreground: #B2BEC3;
-
-  --card: rgba(255, 255, 255, 0.65);
-  /* Glass opacity handled in component usually, but here as base */
-  --card-foreground: #2D3436;
-
-  --code: #282C34;
-
-  --font-sans: var(--font-jakarta);
-  --font-display: var(--font-fredoka);
-  --font-mono: var(--font-jetbrains);
-}
-
-.valentine-lube {
-  --background: #FFF9F0;
-  --foreground: #1a1817;
-
-  /* Valentine Red for Primary actions/highlights */
-  --primary: #FF0040;
-  --primary-foreground: #FFFFFF;
-
-  /* Secondary could be the Cream/Yellow from the snippet or a soft Pink */
-  --secondary: #FFF59D;
-  --secondary-foreground: #1a1817;
-
-  /* Accent - Pink */
-  --accent: #FFB8D4;
   --accent-foreground: #1a1817;
 
-  --muted: #FFE4E1;
-  --muted-foreground: #D44D5C;
+  --muted: #F5F0EB;
+  --muted-foreground: #7A7370;
 
   --card: #FFFFFF;
   --card-foreground: #1a1817;
 
-  /* Pink/Red Outline as requested */
-  --border: #FF0040;
+  --popover: #FFFFFF;
+  --popover-foreground: #1a1817;
 
-  --radius: 2.5rem;
-
-  --font-sans: var(--font-fredoka);
-  --font-display: var(--font-fredoka);
-
-  --shadow-neubrutal: 4px 4px 0 0 var(--border);
-  --shadow-neubrutal-hover: 2px 2px 0 0 var(--border);
-  --shadow-neubrutal-lg: 10px 10px 0 0 var(--border);
-}
-
-.neo-brutal {
-  --background: #FFF9F0;
-  --foreground: #1a1817;
-
-  --primary: #EC4899;
-  --primary-foreground: #FFFFFF;
-
-  --secondary: #FFF59D;
-  --secondary-foreground: #1a1817;
-
-  --accent: #B8F4D8;
-  --accent-foreground: #1a1817;
-
-  --muted: #D1D5DB;
-  --muted-foreground: #6B7280;
-
-  --card: #FFFFFF;
-  --card-foreground: #1a1817;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
 
   --border: #1a1817;
-  --radius: 2.5rem;
-  /* Rounder */
+  --input: #E8E3DE;
+  --ring: #FF0040;
 
-  --font-sans: var(--font-fredoka);
-  --font-display: var(--font-fredoka);
+  --radius: 1.5rem;
+
+  /* Theme-specific decorative */
+  --shape-fill: #FFB8D4;
+  --shape-fill-alt: #FFF59D;
+  --shape-stroke: #1a1817;
+  --glow-1: #FFB8D4;
+  --glow-2: #A5D8FF;
+  --glow-3: #FFF59D;
+
+  --shadow-brutal: 6px 6px 0 0 var(--border);
+  --shadow-brutal-sm: 4px 4px 0 0 var(--border);
+  --shadow-brutal-lg: 10px 10px 0 0 var(--border);
+  --shadow-brutal-hover: 8px 8px 0 0 var(--border);
 }
 
-.deep-red {
-  --background: #2D0509;
-  /* Deep Crimson/Dark Chocolate */
+/* ============================================
+   THEME 2: DARK ROMANCE
+   Deep crimson/black background, red glow, moody
+   ============================================ */
+.dark-romance {
+  --background: #120308;
   --foreground: #FFF0F0;
-  /* Soft White */
 
-  --primary: #FF0040;
-  /* Vibrant Red */
+  --primary: #FF1744;
   --primary-foreground: #FFFFFF;
+  --primary-dark: #D50032;
 
-  --secondary: #4A0A15;
-  /* Darker Crimson */
+  --secondary: #2A0A12;
   --secondary-foreground: #FFF0F0;
 
   --accent: #FFD700;
-  /* Gold */
-  --accent-foreground: #2D0509;
+  --accent-foreground: #120308;
 
-  --muted: #5C101C;
+  --muted: #1F0810;
   --muted-foreground: #FFB8C6;
 
-  --card: #1A0205;
-  /* Almost black */
+  --card: #1A050A;
   --card-foreground: #FFF0F0;
 
-  --border: #FF0040;
-  --radius: 2.5rem;
+  --popover: #1A050A;
+  --popover-foreground: #FFF0F0;
 
-  --font-sans: var(--font-fredoka);
-  --font-display: var(--font-fredoka);
+  --destructive: #FF3D3D;
+  --destructive-foreground: #FFFFFF;
 
-  --shadow-neubrutal: 4px 4px 0 0 #FF0040;
-  --shadow-neubrutal-hover: 2px 2px 0 0 #FF0040;
+  --border: #FF1744;
+  --input: #2A0A12;
+  --ring: #FF1744;
+
+  --radius: 1.5rem;
+
+  --shape-fill: #FF1744;
+  --shape-fill-alt: #FFD700;
+  --shape-stroke: #FF1744;
+  --glow-1: rgba(255, 23, 68, 0.3);
+  --glow-2: rgba(255, 215, 0, 0.15);
+  --glow-3: rgba(255, 23, 68, 0.1);
+
+  --shadow-brutal: 6px 6px 0 0 rgba(255, 23, 68, 0.5);
+  --shadow-brutal-sm: 4px 4px 0 0 rgba(255, 23, 68, 0.5);
+  --shadow-brutal-lg: 10px 10px 0 0 rgba(255, 23, 68, 0.5);
+  --shadow-brutal-hover: 8px 8px 0 0 rgba(255, 23, 68, 0.6);
 }
 
-/* Animations */
+/* ============================================
+   THEME 3: NEON LOVE
+   Dark purple/black BG, hot pink neon, cyberpunk
+   ============================================ */
+.neon-love {
+  --background: #0A0015;
+  --foreground: #F0E6FF;
+
+  --primary: #FF00FF;
+  --primary-foreground: #000000;
+  --primary-dark: #CC00CC;
+
+  --secondary: #1A0030;
+  --secondary-foreground: #F0E6FF;
+
+  --accent: #00FFFF;
+  --accent-foreground: #0A0015;
+
+  --muted: #150025;
+  --muted-foreground: #B380FF;
+
+  --card: #10001F;
+  --card-foreground: #F0E6FF;
+
+  --popover: #10001F;
+  --popover-foreground: #F0E6FF;
+
+  --destructive: #FF3D71;
+  --destructive-foreground: #FFFFFF;
+
+  --border: #FF00FF;
+  --input: #1A0030;
+  --ring: #FF00FF;
+
+  --radius: 1.5rem;
+
+  --shape-fill: #FF00FF;
+  --shape-fill-alt: #00FFFF;
+  --shape-stroke: #FF00FF;
+  --glow-1: rgba(255, 0, 255, 0.3);
+  --glow-2: rgba(0, 255, 255, 0.2);
+  --glow-3: rgba(255, 0, 255, 0.1);
+
+  --shadow-brutal: 6px 6px 0 0 rgba(255, 0, 255, 0.5);
+  --shadow-brutal-sm: 4px 4px 0 0 rgba(255, 0, 255, 0.5);
+  --shadow-brutal-lg: 10px 10px 0 0 rgba(255, 0, 255, 0.5);
+  --shadow-brutal-hover: 8px 8px 0 0 rgba(255, 0, 255, 0.6);
+}
+
+/* ============================================
+   BACKWARD COMPATIBILITY ALIASES
+   Duplicate variables for old theme class names
+   ============================================ */
+.deep-red {
+  --background: #120308;
+  --foreground: #FFF0F0;
+  --primary: #FF1744;
+  --primary-foreground: #FFFFFF;
+  --primary-dark: #D50032;
+  --secondary: #2A0A12;
+  --secondary-foreground: #FFF0F0;
+  --accent: #FFD700;
+  --accent-foreground: #120308;
+  --muted: #1F0810;
+  --muted-foreground: #FFB8C6;
+  --card: #1A050A;
+  --card-foreground: #FFF0F0;
+  --popover: #1A050A;
+  --popover-foreground: #FFF0F0;
+  --destructive: #FF3D3D;
+  --destructive-foreground: #FFFFFF;
+  --border: #FF1744;
+  --input: #2A0A12;
+  --ring: #FF1744;
+  --shape-fill: #FF1744;
+  --shape-fill-alt: #FFD700;
+  --shape-stroke: #FF1744;
+  --glow-1: rgba(255, 23, 68, 0.3);
+  --glow-2: rgba(255, 215, 0, 0.15);
+  --glow-3: rgba(255, 23, 68, 0.1);
+  --shadow-brutal: 6px 6px 0 0 rgba(255, 23, 68, 0.5);
+  --shadow-brutal-sm: 4px 4px 0 0 rgba(255, 23, 68, 0.5);
+  --shadow-brutal-lg: 10px 10px 0 0 rgba(255, 23, 68, 0.5);
+  --shadow-brutal-hover: 8px 8px 0 0 rgba(255, 23, 68, 0.6);
+}
+
+.neo-brutal,
+.valentine-lube,
+.pastel-dream {
+  /* These are light themes — use root defaults, no overrides needed */
+}
+
+.cosmos-bear {
+  --background: #0A0015;
+  --foreground: #F0E6FF;
+  --primary: #FF00FF;
+  --primary-foreground: #000000;
+  --primary-dark: #CC00CC;
+  --secondary: #1A0030;
+  --secondary-foreground: #F0E6FF;
+  --accent: #00FFFF;
+  --accent-foreground: #0A0015;
+  --muted: #150025;
+  --muted-foreground: #B380FF;
+  --card: #10001F;
+  --card-foreground: #F0E6FF;
+  --popover: #10001F;
+  --popover-foreground: #F0E6FF;
+  --destructive: #FF3D71;
+  --destructive-foreground: #FFFFFF;
+  --border: #FF00FF;
+  --input: #1A0030;
+  --ring: #FF00FF;
+  --shape-fill: #FF00FF;
+  --shape-fill-alt: #00FFFF;
+  --shape-stroke: #FF00FF;
+  --glow-1: rgba(255, 0, 255, 0.3);
+  --glow-2: rgba(0, 255, 255, 0.2);
+  --glow-3: rgba(255, 0, 255, 0.1);
+  --shadow-brutal: 6px 6px 0 0 rgba(255, 0, 255, 0.5);
+  --shadow-brutal-sm: 4px 4px 0 0 rgba(255, 0, 255, 0.5);
+  --shadow-brutal-lg: 10px 10px 0 0 rgba(255, 0, 255, 0.5);
+  --shadow-brutal-hover: 8px 8px 0 0 rgba(255, 0, 255, 0.6);
+}
+
+.obsidian {
+  --background: #120308;
+  --foreground: #FFF0F0;
+  --primary: #FF1744;
+  --primary-foreground: #FFFFFF;
+  --primary-dark: #D50032;
+  --secondary: #2A0A12;
+  --secondary-foreground: #FFF0F0;
+  --accent: #FFD700;
+  --accent-foreground: #120308;
+  --muted: #1F0810;
+  --muted-foreground: #FFB8C6;
+  --card: #1A050A;
+  --card-foreground: #FFF0F0;
+  --border: #FF1744;
+  --input: #2A0A12;
+  --ring: #FF1744;
+  --shape-fill: #FF1744;
+  --shape-fill-alt: #FFD700;
+  --shape-stroke: #FF1744;
+  --glow-1: rgba(255, 23, 68, 0.3);
+  --glow-2: rgba(255, 215, 0, 0.15);
+  --glow-3: rgba(255, 23, 68, 0.1);
+  --shadow-brutal: 6px 6px 0 0 rgba(255, 23, 68, 0.5);
+  --shadow-brutal-sm: 4px 4px 0 0 rgba(255, 23, 68, 0.5);
+  --shadow-brutal-lg: 10px 10px 0 0 rgba(255, 23, 68, 0.5);
+  --shadow-brutal-hover: 8px 8px 0 0 rgba(255, 23, 68, 0.6);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
 @keyframes float {
 
   0%,
@@ -313,25 +325,18 @@
   }
 }
 
-.animate-float {
-  animation: float 4s ease-in-out infinite;
+@keyframes float-reverse {
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+
+  50% {
+    transform: translateY(15px) rotate(-2deg);
+  }
 }
 
-.animate-float-slow {
-  animation: float-slow 6s ease-in-out infinite;
-}
-
-.gradient-text-valentine {
-  background: linear-gradient(to right, #FF0040, #FF4081, #FF80AB);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.bg-pattern-valentine {
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23FF0040' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-}
-
-/* Inspiration Animations */
 @keyframes bounce-soft {
 
   0%,
@@ -357,7 +362,7 @@
 @keyframes slide-up {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
 
   to {
@@ -366,18 +371,95 @@
   }
 }
 
-@keyframes rainbow {
-  0% {
-    background-position: 0% 50%;
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(1);
   }
 
   50% {
-    background-position: 100% 50%;
+    opacity: 0.3;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
   }
 
   100% {
-    background-position: 0% 50%;
+    background-position: 200% center;
   }
+}
+
+@keyframes heartbeat {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  15% {
+    transform: scale(1.15);
+  }
+
+  30% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.1);
+  }
+}
+
+/* Animation Utilities */
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: float-reverse 5s ease-in-out infinite;
 }
 
 .animate-bounce-soft {
@@ -392,15 +474,31 @@
   animation: slide-up 0.8s ease-out forwards;
 }
 
-.animate-rainbow {
-  animation: rainbow 5s ease infinite;
+.animate-slide-down {
+  animation: slide-down 0.6s ease-out forwards;
 }
 
-.animate-on-load {
-  opacity: 0;
-  animation-fill-mode: forwards;
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
 }
 
+.animate-scale-in {
+  animation: scale-in 0.5s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 3s linear infinite;
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+/* Stagger Delays */
 .stagger-1 {
   animation-delay: 0.1s;
 }
@@ -417,6 +515,95 @@
   animation-delay: 0.4s;
 }
 
+.stagger-5 {
+  animation-delay: 0.5s;
+}
+
+.stagger-6 {
+  animation-delay: 0.6s;
+}
+
+.animate-on-load {
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-valentine {
+  background: linear-gradient(to right, #FF0040, #FF4081, #FF80AB);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Neo-brutal card */
+.card-brutal {
+  background: var(--card);
+  border: 3px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-brutal);
+  transition: all 0.2s ease;
+}
+
+.card-brutal:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-brutal-hover);
+}
+
+/* Neo-brutal button */
+.btn-brutal {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: 3px solid var(--border);
+  border-radius: 1rem;
+  font-weight: 800;
+  box-shadow: var(--shadow-brutal-sm);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.btn-brutal:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-brutal);
+}
+
+.btn-brutal:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+/* Pill nav style */
+.pill-nav {
+  background: color-mix(in srgb, var(--card) 80%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 3px solid var(--border);
+  border-radius: 9999px;
+  box-shadow: var(--shadow-brutal-sm);
+  transition: all 0.3s ease;
+}
+
+.pill-nav:hover {
+  box-shadow: var(--shadow-brutal);
+  transform: translateY(-1px);
+}
+
+/* Glow button */
 .btn-glow {
   position: relative;
   overflow: hidden;
@@ -440,8 +627,42 @@
   transform: scale(1);
 }
 
+/* Background cross pattern */
+.bg-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23FF0040' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--muted);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
+}
+
+/* ============================================
+   BASE LAYER
+   ============================================ */
 @layer base {
   body {
     @apply bg-background text-foreground transition-colors duration-500;
+    font-family: var(--font-sans), system-ui, sans-serif;
+  }
+
+  ::selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
   }
 }

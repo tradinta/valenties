@@ -81,6 +81,13 @@ service cloud.firestore {
     match /users/{userId} {
         allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
         allow write: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+
+        match /chat_history/{chatId} {
+            allow read, write: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+        }
+        match /saved_strangers/{strangerId} {
+            allow read, write: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+        }
     }
 
     // Admin Settings - Everyone can read pricing, only Admin can write

@@ -3,13 +3,14 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, Settings, ShieldAlert, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, Settings, ShieldAlert, LogOut, ShieldBan } from 'lucide-react';
 
 const menuItems = [
     { icon: LayoutDashboard, label: 'Overview', href: '/admin/overview' },
     { icon: Users, label: 'Users', href: '/admin/users' },
-    { icon: ShieldAlert, label: 'Audit Log', href: '/admin/audit' },
-    { icon: Settings, label: 'Settings', href: '/admin/settings' },
+    { icon: ShieldBan, label: 'Moderation', href: '/admin/moderation' },
+    { icon: ShieldAlert, label: 'Traps (Content)', href: '/admin/content' },
+    { icon: Settings, label: 'Plans & Settings', href: '/admin/plans' },
 ];
 
 export const AdminSidebar = () => {

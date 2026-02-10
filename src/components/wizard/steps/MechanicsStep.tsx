@@ -3,7 +3,9 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { TrapConfig } from '@/types';
-import { Eye, Type } from 'lucide-react';
+import { Eye, Type, Zap, Ghost, Shuffle, MessageSquare, BrainCircuit, Lock } from 'lucide-react'; // Added icons
+import { useFeatureGate } from '@/hooks/useFeatureGate'; // Import default
+import { FeatureGate } from '@/components/premium/FeatureGate';
 
 interface MechanicsStepProps {
     config: Partial<TrapConfig>;
@@ -12,34 +14,109 @@ interface MechanicsStepProps {
     onBack: () => void;
 }
 
+// Define mechanics with their required tiers
+const MECHANICS = [
+    { id: 'run-away', label: 'Run Away', icon: <Zap className="w-5 h-5" />, desc: 'Button flees when hovered', tier: 'free' },
+    { id: 'shrink', label: 'Shrink', icon: <Ghost className="w-5 h-5" />, desc: 'Button gets smaller and smaller', tier: 'free' },
+    { id: 'teleport', label: 'Teleport', icon: <Shuffle className="w-5 h-5" />, desc: 'Instantly moves to random spot', tier: 'starter' },
+    { id: 'guilt-trip', label: 'Guilt Trip', icon: <MessageSquare className="w-5 h-5" />, desc: 'Sad messages before moving', tier: 'starter' },
+    { id: 'dsa-quiz', label: 'DSA Quiz', icon: <BrainCircuit className="w-5 h-5" />, desc: 'Must solve coding problem first', tier: 'casual' },
+    { id: 'impossible-form', label: 'Impossible Form', icon: <Lock className="w-5 h-5" />, desc: 'Endless bureaucratic checkboxes', tier: 'casual' },
+] as const;
+
 export const MechanicsStep: React.FC<MechanicsStepProps> = ({ config, updateConfig, onNext, onBack }) => {
+    const { hasFeature } = useFeatureGate();
+
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
             <div className="text-center space-y-2">
-                <h2 className="text-4xl font-display font-medium text-black dark:text-white">Visuals & Branding</h2>
-                <p className="text-[var(--foreground-muted)] dark:text-gray-300 font-bold">Customize the look and feel.</p>
+                <h2 className="text-4xl font-display font-medium text-black dark:text-white">The Trap</h2>
+                <p className="text-[var(--foreground-muted)] dark:text-gray-300 font-bold">Choose how they can't say no.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
 
-                {/* Left Column: Theme & Text */}
+                {/* Left Column: Mechanics Selection */}
+                <div className="space-y-6">
+                    <div className="bg-[var(--card)] dark:bg-zinc-800 p-6 rounded-3xl border-[3px] border-black shadow-[6px_6px_0_0_#000] space-y-4">
+                        <label className="text-sm font-bold text-black dark:text-white uppercase tracking-wider block mb-2">
+                            Select Evasion Mechanic
+                        </label>
+                        <div className="grid grid-cols-1 gap-3">
+                            {MECHANICS.map((mech) => {
+                                const isSelected = config.noMechanic === mech.id;
+                                const requiredFeature = mech.tier === 'casual' ? 'trap_expert_mechanics'
+                                    : mech.tier === 'starter' ? 'trap_advanced_mechanics'
+                                        : null;
+                                const isLocked = requiredFeature ? !hasFeature(requiredFeature) : false;
+
+                                // We render the button, wrapping it in FeatureGate if needed
+                                const ButtonContent = (
+                                    <button
+                                        onClick={() => !isLocked && updateConfig({ noMechanic: mech.id as any })}
+                                        className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-center gap-4 group relative overflow-hidden ${isSelected
+                                            ? 'bg-black text-white border-black shadow-[4px_4px_0_0_#666]'
+                                            : 'bg-white text-black border-black hover:bg-gray-50 shadow-[2px_2px_0_0_#000]'
+                                            } ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    >
+                                        <div className={`p-2 rounded-full ${isSelected ? 'bg-white/20 text-white' : 'bg-gray-100 text-black'}`}>
+                                            {mech.icon}
+                                        </div>
+                                        <div>
+                                            <div className="font-black text-lg">{mech.label}</div>
+                                            <div className={`text-xs font-medium ${isSelected ? 'text-gray-300' : 'text-gray-500'}`}>{mech.desc}</div>
+                                        </div>
+                                    </button>
+                                );
+
+                                if (requiredFeature) {
+                                    return (
+                                        <FeatureGate
+                                            key={mech.id}
+                                            feature={requiredFeature}
+                                            inline
+                                            silent={false}
+                                        >
+                                            {ButtonContent}
+                                        </FeatureGate>
+                                    );
+                                }
+
+                                return <div key={mech.id}>{ButtonContent}</div>;
+                            })}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Column: Visuals (Theme & Labels) */}
                 <div className="space-y-6">
                     <div className="bg-[var(--card)] dark:bg-zinc-800 p-6 rounded-3xl border-[3px] border-black shadow-[6px_6px_0_0_#000] space-y-4 relative -rotate-1 hover:rotate-0 transition-transform duration-200">
                         <div className="space-y-3">
                             <label className="text-sm font-bold text-black dark:text-white uppercase tracking-wider">Visual Theme</label>
                             <div className="grid grid-cols-2 gap-2">
-                                {['cupid', 'dark-romance', 'neon-love', 'pastel-dream', 'obsidian'].map((t) => (
-                                    <button
-                                        key={t}
-                                        onClick={() => updateConfig({ theme: t as any })}
-                                        className={`px-4 py-3 rounded-xl text-sm font-bold transition-all border-2 ${config.theme === t
-                                            ? 'bg-black text-white border-black shadow-[4px_4px_0_0_#666]'
-                                            : 'bg-white text-black border-black hover:bg-gray-100 shadow-[2px_2px_0_0_#000] dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600'
-                                            }`}
-                                    >
-                                        {t.replace('-', ' ')}
-                                    </button>
-                                ))}
+                                {['cupid', 'dark-romance', 'neon-love', 'pastel-dream', 'obsidian'].map((t) => {
+                                    const isCustom = t !== 'cupid';
+                                    const ThemeButton = (
+                                        <button
+                                            onClick={() => updateConfig({ theme: t as any })}
+                                            className={`w-full px-4 py-3 rounded-xl text-sm font-bold transition-all border-2 ${config.theme === t
+                                                ? 'bg-black text-white border-black shadow-[4px_4px_0_0_#666]'
+                                                : 'bg-white text-black border-black hover:bg-gray-100 shadow-[2px_2px_0_0_#000]'
+                                                }`}
+                                        >
+                                            {t.replace('-', ' ')}
+                                        </button>
+                                    );
+
+                                    if (isCustom) {
+                                        return (
+                                            <FeatureGate key={t} feature="trap_custom_themes" inline>
+                                                {ThemeButton}
+                                            </FeatureGate>
+                                        );
+                                    }
+                                    return <div key={t}>{ThemeButton}</div>;
+                                })}
                             </div>
                         </div>
                     </div>
@@ -71,20 +148,6 @@ export const MechanicsStep: React.FC<MechanicsStepProps> = ({ config, updateConf
                             </div>
                         </div>
                     </div>
-                </div>
-
-                {/* Right Column: Preview Info (No Live Preview) */}
-                <div className="bg-[var(--cream)] p-8 rounded-3xl border-[3px] border-dashed border-black flex flex-col items-center justify-center text-center h-full min-h-[300px] relative">
-                    <div className="w-20 h-20 bg-[var(--primary)] rounded-full flex items-center justify-center mb-4 text-white border-[3px] border-black shadow-[4px_4px_0_0_#000]">
-                        <Eye className="w-10 h-10" />
-                    </div>
-                    <div className="bg-black text-white px-4 py-1 rounded-full text-xs font-bold mb-4 rotate-2">
-                        COMING SOON
-                    </div>
-                    <h3 className="text-2xl font-display font-bold text-black mb-2">Preview Mode</h3>
-                    <p className="text-gray-600 max-w-xs leading-relaxed font-bold">
-                        Once you finish creating your trap, you'll get a secret link to test it yourself before sending it out.
-                    </p>
                 </div>
             </div>
 

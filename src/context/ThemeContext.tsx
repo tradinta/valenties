@@ -2,67 +2,76 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-type Theme = 'cosmos' | 'neo' | 'valentine' | 'deep-red';
+// 3 Unified Themes
+export type Theme = 'classic' | 'dark-romance' | 'neon-love';
 
 interface ThemeContextType {
     theme: Theme;
     toggleTheme: () => void;
     setTheme: (theme: Theme) => void;
+    isDark: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+// Map old theme keys to new ones for backward compat
+const THEME_MIGRATION: Record<string, Theme> = {
+    'valentine': 'classic',
+    'neo': 'classic',
+    'cosmos': 'neon-love',
+    'deep-red': 'dark-romance',
+    'classic': 'classic',
+    'dark-romance': 'dark-romance',
+    'neon-love': 'neon-love',
+};
+
+const THEME_CLASSES: Record<Theme, string> = {
+    'classic': '', // Default, no class needed
+    'dark-romance': 'dark-romance',
+    'neon-love': 'neon-love',
+};
+
+const THEME_ORDER: Theme[] = ['classic', 'dark-romance', 'neon-love'];
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [theme, setThemeState] = useState<Theme>('deep-red');
+    const [theme, setThemeState] = useState<Theme>('classic');
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        // Load legacy preference first if exists, otherwise default
-        const saved = localStorage.getItem('kihumba_theme') as Theme;
-        if (saved && (saved === 'cosmos' || saved === 'neo' || saved === 'valentine' || saved === 'deep-red')) {
-            setThemeState(saved);
-            // Apply the saved theme immediately to prevent flash
-            const root = document.documentElement;
-            root.classList.remove('cosmos-bear', 'neo-brutal', 'valentine-lube', 'deep-red');
-            if (saved === 'cosmos') root.classList.add('cosmos-bear');
-            else if (saved === 'neo') root.classList.add('neo-brutal');
-            else if (saved === 'valentine') root.classList.add('valentine-lube');
-            else if (saved === 'deep-red') root.classList.add('deep-red');
-        } else {
-            setThemeState('deep-red'); // Force default to deep-red
-            document.documentElement.classList.add('deep-red');
-        }
+        const saved = localStorage.getItem('kihumba_theme');
+        const migrated = saved ? THEME_MIGRATION[saved] || 'classic' : 'classic';
+        setThemeState(migrated);
+        applyThemeClass(migrated);
         setMounted(true);
     }, []);
+
+    const applyThemeClass = (newTheme: Theme) => {
+        const root = document.documentElement;
+        // Remove all theme classes
+        Object.values(THEME_CLASSES).forEach(cls => {
+            if (cls) root.classList.remove(cls);
+        });
+        // Add new theme class
+        const cls = THEME_CLASSES[newTheme];
+        if (cls) root.classList.add(cls);
+    };
 
     const setTheme = (newTheme: Theme) => {
         setThemeState(newTheme);
         localStorage.setItem('kihumba_theme', newTheme);
-
-        // Update document class for global styles if needed
-        const root = document.documentElement;
-        root.classList.remove('cosmos-bear', 'neo-brutal', 'valentine-lube', 'deep-red'); // Clear all
-
-        if (newTheme === 'cosmos') {
-            root.classList.add('cosmos-bear');
-        } else if (newTheme === 'neo') {
-            root.classList.add('neo-brutal');
-        } else if (newTheme === 'valentine') {
-            root.classList.add('valentine-lube');
-        } else if (newTheme === 'deep-red') {
-            root.classList.add('deep-red');
-        }
+        applyThemeClass(newTheme);
     };
 
     const toggleTheme = () => {
-        if (theme === 'valentine') setTheme('deep-red');
-        else if (theme === 'deep-red') setTheme('cosmos');
-        else if (theme === 'cosmos') setTheme('neo');
-        else setTheme('valentine');
+        const currentIndex = THEME_ORDER.indexOf(theme);
+        const nextIndex = (currentIndex + 1) % THEME_ORDER.length;
+        setTheme(THEME_ORDER[nextIndex]);
     };
 
+    const isDark = theme === 'dark-romance' || theme === 'neon-love';
+
     return (
-        <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
+        <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, isDark }}>
             {mounted ? (
                 children
             ) : (

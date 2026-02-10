@@ -3,5 +3,10 @@ export type Message = {
     text: string;
     sender: 'me' | 'them' | 'system';
     timestamp: number;
-    type?: 'text' | 'image';
+    type?: 'text' | 'image' | 'voice';
+    replyTo?: {
+        id: string;
+        text: string;
+        sender: 'me' | 'them' | 'system';
+    };
 };
