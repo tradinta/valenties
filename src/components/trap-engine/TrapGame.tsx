@@ -45,7 +45,7 @@ export const TrapGame: React.FC<TrapGameProps> = ({ data, id, logEvent }) => {
         logEvent('click_yes', { attempts });
 
         try {
-            // Use TrapService instead of raw Firestore
+            // Use TrapService instead of raw Fire
             await TrapService.markCompleted(id, attempts);
         } catch {
             // Silently fail - don't expose errors to partner

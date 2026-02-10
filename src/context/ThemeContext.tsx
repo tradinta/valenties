@@ -66,7 +66,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('kihumba_theme', migrated);
         applyThemeClass(migrated);
     };
-    stone
+
     const toggleTheme = () => {
         const currentIndex = THEME_ORDER.indexOf(theme);
         const nextIndex = (currentIndex + 1) % THEME_ORDER.length;

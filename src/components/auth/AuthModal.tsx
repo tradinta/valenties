@@ -53,7 +53,8 @@ export const AuthModal = ({ isOpen, onClose, toolName }: AuthModalProps) => {
                                     {isLogin ? 'Welcome Back!' : 'Join the Club'}
                                 </h3>
                                 <p className="text-sm font-bold opacity-70 mt-1 pb-4">
-                                    ? `Login to save your "${toolName}" results.`
+                                    {toolName
+                                        ? `Login to save your "${toolName}" results.`
                                         : 'Login to track your chaotic stats.'}
                                 </p>
                             </div>
