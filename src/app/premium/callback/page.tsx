@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Check, Loader2, XCircle, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 
-export default function PremiumCallbackPage() {
+function PremiumCallbackContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { refreshProfile, userTier } = useAuth();
     const [status, setStatus] = useState<'verifying' | 'success' | 'failed'>('verifying');
-    const reference = searchParams.get('reference') || searchParams.get('trxref');
+    const reference = searchParams?.get('reference') || searchParams?.get('trxref');
 
     useEffect(() => {
         const verify = async () => {
@@ -117,5 +117,13 @@ export default function PremiumCallbackPage() {
                 )}
             </motion.div>
         </div>
+    );
+}
+
+export default function PremiumCallbackPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
+            <PremiumCallbackContent />
+        </Suspense>
     );
 }

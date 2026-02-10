@@ -57,33 +57,33 @@ export const AuthForm = () => {
     };
 
     return (
-        <div className="w-full max-w-md bg-white/90 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-white/50">
+        <div className="w-full max-w-md bg-card border-[4px] border-border p-8 rounded-3xl shadow-brutal transition-colors duration-500">
             <div className="text-center mb-8">
-                <h2 className="text-5xl font-display text-rose-950 mb-2">
-                    {isLogin ? "Welcome Back" : "Join the Trap"}
+                <h2 className="text-5xl font-display text-foreground mb-2">
+                    {isLogin ? "Welcome Back" : "Join the Chaos"}
                 </h2>
-                <p className="text-rose-800/60 text-sm mt-2">
+                <p className="text-muted-foreground text-sm mt-2 font-bold">
                     {isLogin ? "Manage your traps and view stats." : "Create an account to save your traps."}
                 </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                    <label className="text-xs font-bold text-rose-900 uppercase tracking-wider">Username</label>
+                    <label className="text-xs font-black text-foreground uppercase tracking-wider ml-1">Username</label>
                     <input
                         type="text"
-                        className="w-full bg-pink-50/50 border border-pink-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-rose-400 transition-all"
-                        placeholder="cupid123"
+                        className="w-full bg-background border-[3px] border-border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary focus:shadow-brutal-sm transition-all font-bold text-foreground"
+                        placeholder="chaotic_user"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                     />
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-xs font-bold text-rose-900 uppercase tracking-wider">Password</label>
+                    <label className="text-xs font-black text-foreground uppercase tracking-wider ml-1">Password</label>
                     <input
                         type="password"
-                        className="w-full bg-pink-50/50 border border-pink-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-rose-400 transition-all"
+                        className="w-full bg-background border-[3px] border-border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary focus:shadow-brutal-sm transition-all font-bold text-foreground"
                         placeholder="••••••••"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -96,7 +96,7 @@ export const AuthForm = () => {
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
-                            className="text-red-500 text-sm text-center font-medium bg-red-50 p-2 rounded-lg"
+                            className="text-red-500 text-sm text-center font-black bg-red-500/10 border-2 border-red-500/20 p-2 rounded-lg"
                         >
                             {error}
                         </motion.div>
@@ -106,9 +106,9 @@ export const AuthForm = () => {
                 <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-rose-600 hover:bg-rose-700 text-white py-6 rounded-xl text-lg font-bold shadow-lg shadow-rose-200 overflow-hidden relative"
+                    className="w-full bg-primary hover:opacity-90 text-primary-foreground py-6 rounded-xl text-lg font-black border-[3px] border-border shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:scale-95"
                 >
-                    {loading ? <Loader2 className="animate-spin" /> : (isLogin ? "Login" : "Sign Up")}
+                    {loading ? <Loader2 className="animate-spin" /> : (isLogin ? "Login ⚡" : "Sign Up 🚀")}
                 </Button>
             </form>
 
@@ -116,7 +116,7 @@ export const AuthForm = () => {
                 <button
                     type="button"
                     onClick={() => { setIsLogin(!isLogin); setError(""); }}
-                    className="text-sm text-rose-500 hover:text-rose-700 font-medium hover:underline transition-colors"
+                    className="text-sm text-primary hover:text-foreground font-black hover:underline transition-colors uppercase tracking-widest"
                 >
                     {isLogin ? "Need an account? Create one" : "Already have an account? Login"}
                 </button>

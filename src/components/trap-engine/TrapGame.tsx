@@ -47,6 +47,19 @@ export const TrapGame: React.FC<TrapGameProps> = ({ data, id, logEvent }) => {
         try {
             // Use TrapService instead of raw Fire
             await TrapService.markCompleted(id, attempts);
+
+            // Trigger Email Notification (Premium Feature)
+            if (data.creatorEmail) {
+                fetch('/api/email/notification', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        to: data.creatorEmail,
+                        creatorName: data.creatorName,
+                        partnerName: data.partnerName,
+                        attempts: attempts
+                    })
+                }).catch(err => console.error("Notification failed:", err));
+            }
         } catch {
             // Silently fail - don't expose errors to partner
         }

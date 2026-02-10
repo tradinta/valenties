@@ -19,25 +19,32 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({ children }) => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user: User | null) => {
             if (!user) {
-                // Not logged in - show 404
                 setStatus('unauthorized');
                 return;
             }
 
-            try {
-                // Check user profile for admin tier
-                const profile = await UserService.getProfile(user.uid);
+            // Real-time listener for instant access revocation
+            const { doc, onSnapshot } = await import('firebase/firestore');
+            const { db } = await import('@/lib/firebase');
 
-                if (profile?.tier === 'admin') {
+            const profileRef = doc(db, 'users', user.uid);
+
+            // Listen to profile changes
+            const unsubscribeProfile = onSnapshot(profileRef, (doc) => {
+                const data = doc.data();
+                // Check tier - explicitly strictly equal to 'admin'
+                if (data?.tier === 'admin') {
                     setStatus('authorized');
                 } else {
-                    // Non-admin - show 404
+                    // Instant kick if demoted
                     setStatus('unauthorized');
                 }
-            } catch (error) {
-                console.error('Error checking admin status:', error);
+            }, (error) => {
+                console.error("Admin guard error:", error);
                 setStatus('unauthorized');
-            }
+            });
+
+            return () => unsubscribeProfile();
         });
 
         return () => unsubscribe();

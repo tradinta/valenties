@@ -18,6 +18,9 @@ interface ChatUser {
     tier?: string;
     interests?: string[];
     mode?: 'chaos' | 'normal';
+    gender?: string;
+    country?: string;
+    filters?: { gender?: string; country?: string };
     lastActive: number;
 }
 

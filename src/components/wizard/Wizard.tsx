@@ -35,13 +35,14 @@ export const Wizard = () => {
         setConfig(prev => ({ ...prev, ...data }));
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (finalData?: Partial<TrapConfig>) => {
         setIsLoading(true);
         try {
             const user = auth.currentUser;
+            const currentConfig = { ...config, ...finalData };
 
             // Sanitize config to remove undefined values (Firestore rejects undefined)
-            const cleanConfig = JSON.parse(JSON.stringify(config));
+            const cleanConfig = JSON.parse(JSON.stringify(currentConfig));
 
             const docRef = await addDoc(collection(db, "traps"), {
                 ...cleanConfig,
@@ -64,7 +65,7 @@ export const Wizard = () => {
             case 1: return <BasicsStep config={config} updateConfig={updateConfig} onNext={nextStep} onBack={prevStep} />;
             // ChallengeStep removed (theme/labels) - will be re-added later
             case 2: return <MechanicsStep config={config} updateConfig={updateConfig} onNext={nextStep} onBack={prevStep} />;
-            case 3: return <SecurityStep config={config} updateConfig={updateConfig} onSubmit={handleSubmit} onBack={prevStep} isSubmitting={isLoading} />;
+            case 3: return <SecurityStep config={config} updateConfig={updateConfig} onSubmit={(final) => handleSubmit(final)} onBack={prevStep} isSubmitting={isLoading} />;
             default: return <div>Step {step} Coming Soon</div>;
         }
     };

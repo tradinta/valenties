@@ -8,7 +8,7 @@ import { Loader2, Rocket, Key, HelpCircle, AlertTriangle } from 'lucide-react';
 interface SecurityStepProps {
     config: Partial<TrapConfig>;
     updateConfig: (data: Partial<TrapConfig>) => void;
-    onSubmit: () => void;
+    onSubmit: (finalData?: Partial<TrapConfig>) => void;
     onBack: () => void;
     isSubmitting: boolean;
 }
@@ -116,13 +116,13 @@ export const SecurityStep: React.FC<SecurityStepProps> = ({ config, updateConfig
                 <Button variant="ghost" onClick={onBack} className="text-black dark:text-white font-bold hover:bg-black/10 dark:hover:bg-white/10">Back</Button>
                 <Button
                     onClick={() => {
-                        // Pass security params even if empty, or filter them out logic side
-                        updateConfig({
-                            security: { question, answer, hint, scold }
-                        });
-                        onSubmit();
+                        const securityData = {
+                            security: question && answer ? { question, answer, hint, scold } : undefined,
+                            creatorEmail: config.creatorEmail
+                        };
+                        onSubmit(securityData);
                     }}
-                    disabled={isSubmitting} // REMOVED !config.security?.question check
+                    disabled={isSubmitting}
                     className="bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white px-8 py-4 text-lg rounded-full border-[3px] border-black shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] hover:-translate-y-1 active:shadow-[2px_2px_0_0_#000] active:translate-y-[1px] transition-all font-display disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {isSubmitting ? (

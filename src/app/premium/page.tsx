@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Crown, Zap, Rocket, Shield, Sparkles, MessageCircle, BarChart3, Image, Mic, Palette, X as XIcon, Loader2, Globe } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
@@ -44,11 +44,11 @@ const PLAN_FEATURES: Record<string, { text: string; icon: React.ReactNode }[]> =
     ],
 };
 
-export default function PremiumPage() {
+function PremiumContent() {
     const { firebaseUser, userTier, isLoggedIn } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
-    const highlightPlan = searchParams.get('plan');
+    const highlightPlan = searchParams?.get('plan');
 
     const [settings, setSettings] = useState<AdminSettings | null>(null);
     const [currency, setCurrency] = useState<PaystackCurrency>('USD');
@@ -343,5 +343,13 @@ export default function PremiumPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function PremiumPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
+            <PremiumContent />
+        </Suspense>
     );
 }
