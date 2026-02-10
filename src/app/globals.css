@@ -96,10 +96,10 @@
 }
 
 /* ============================================
-   THEME 2: DARK ROMANCE
+   THEME 2: DARK
    Deep crimson/black background, red glow, moody
    ============================================ */
-.dark-romance {
+.dark {
   --background: #120308;
   --foreground: #FFF0F0;
 
@@ -145,10 +145,10 @@
 }
 
 /* ============================================
-   THEME 3: NEON LOVE
+   THEME 3: NEON
    Dark purple/black BG, hot pink neon, cyberpunk
    ============================================ */
-.neon-love {
+.neon {
   --background: #0A0015;
   --foreground: #F0E6FF;
 

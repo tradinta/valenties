@@ -13,8 +13,8 @@ export const metadata: Metadata = {
     default: "Kihumba | The Chaos Toolkit",
     template: "%s | Kihumba",
   },
-  description: "Digital tools for modern romance. Create Valentine traps, anonymous confession walls, polls, and more.",
-  keywords: ["valentine", "trap", "prank", "love", "relationships", "confession", "poll", "quiz", "anonymous", "romance"],
+  description: "Digital tools for modern chaos. Create funny traps, anonymous confession walls, polls, and more.",
+  keywords: ["trap", "prank", "chaos", "decisions", "confession", "poll", "quiz", "anonymous", "fun"],
   authors: [{ name: "Kihumba Team" }],
   creator: "Kihumba",
   publisher: "Kihumba",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Kihumba | The Chaos Toolkit",
-    description: "Digital tools for modern romance. Create Valentine traps, anonymous confession walls, polls, and more.",
+    description: "Digital tools for modern chaos. Create funny traps, anonymous confession walls, polls, and more.",
     url: 'https://kihumba.com',
     siteName: 'Kihumba',
     images: [
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: "Kihumba | The Chaos Toolkit",
-    description: "Digital tools for modern romance. Create Valentine traps, anonymous confession walls, polls, and more.",
+    description: "Digital tools for modern chaos. Create funny traps, anonymous confession walls, polls, and more.",
     creator: '@kihumba', // Replace with actual handle
     images: ['/twitter-image.png'], // Add this image to public folder!
   },

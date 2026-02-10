@@ -142,7 +142,7 @@ const HeroSection = () => {
         transition={{ duration: 0.8, delay: 0.3 }}
         className="text-lg md:text-xl font-bold text-muted-foreground max-w-xl mx-auto mb-10 leading-relaxed"
       >
-        Digital tools for modern romance. Prank your partner, make decisions together, or scream into the void. It's chaos — but it's <span className="text-primary font-black">your</span> chaos.
+        Digital tools for modern chaos. Prank your partner, make decisions together, or scream into the void. It's chaos — but it's <span className="text-primary font-black">your</span> chaos.
       </motion.p>
 
       {/* CTA Buttons */}
@@ -337,7 +337,7 @@ const Testimonials = () => (
         className="text-center mb-16"
       >
         <span className="card-brutal px-4 py-1.5 text-xs font-black uppercase tracking-widest text-primary inline-block mb-4">
-          💬 Wall of Love
+          💬 Wall of Chaos
         </span>
         <h2 className="text-4xl md:text-6xl font-black text-foreground tracking-tight">
           What <span className="gradient-text-valentine">Trappers</span> Say

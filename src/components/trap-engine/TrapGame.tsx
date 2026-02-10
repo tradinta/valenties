@@ -8,7 +8,7 @@ import { MechanicDispatcher } from '@/components/trap-engine/MechanicDispatcher'
 import { ChaosLayer } from '@/components/trap-engine/ChaosLayer';
 import { TrapData, AnalyticsEvent } from '@/types';
 import { TrapService } from '@/services/TrapService';
-import { Heart } from 'lucide-react';
+import { Zap } from 'lucide-react';
 
 interface TrapGameProps {
     data: TrapData;
@@ -72,14 +72,14 @@ export const TrapGame: React.FC<TrapGameProps> = ({ data, id, logEvent }) => {
                 animate={{ opacity: 1 }}
                 className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6 bg-white/40 backdrop-blur-md p-8 rounded-3xl border border-white/50 shadow-xl max-w-md mx-auto"
             >
-                <Heart className="w-16 h-16 text-rose-400 fill-rose-100" />
+                <Zap className="w-16 h-16 text-primary fill-primary/10" />
                 <div className="space-y-2">
                     <h2 className="text-3xl font-bold text-rose-900 font-display">You already said YES!</h2>
-                    <p className="text-rose-800/70">The trap has been sprung. Using this device, you've already accepted the love.</p>
+                    <p className="text-rose-800/70">The trap has been sprung. Using this device, you've already accepted the chaos.</p>
                 </div>
                 <button
                     onClick={() => setHasPlayedBefore(false)}
-                    className="px-6 py-3 bg-white border-2 border-rose-200 text-rose-600 font-bold rounded-full hover:bg-rose-50 transition-colors"
+                    className="px-6 py-3 bg-secondary border-2 border-border text-foreground font-bold rounded-full hover:bg-primary hover:text-primary-foreground transition-all"
                 >
                     Relive the Experience ↺
                 </button>
@@ -95,12 +95,12 @@ export const TrapGame: React.FC<TrapGameProps> = ({ data, id, logEvent }) => {
                 className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8 max-w-lg mx-auto p-4"
             >
                 <div className="flex items-center gap-4">
-                    <h2 className="text-6xl font-black text-rose-600 font-display">YAY!</h2>
+                    <h2 className="text-6xl font-black text-primary font-display uppercase">VICTORY</h2>
                     <motion.div
                         animate={{ scale: [1, 1.2, 1] }}
                         transition={{ repeat: Infinity, duration: 0.8 }}
                     >
-                        <Heart className="w-16 h-16 text-rose-600 fill-rose-600" />
+                        <Zap className="w-16 h-16 text-primary" />
                     </motion.div>
                 </div>
                 <div className="text-2xl text-rose-800 font-medium space-y-2 font-display">
@@ -116,13 +116,13 @@ export const TrapGame: React.FC<TrapGameProps> = ({ data, id, logEvent }) => {
                         transition={{ delay: 0.5 }}
                         className="w-full space-y-3 bg-white/50 p-6 rounded-2xl border border-pink-200 backdrop-blur-sm shadow-xl"
                     >
-                        <label className="block text-sm font-bold text-rose-700 uppercase tracking-wider">
-                            Leave a sweet note for {data.creatorName || 'them'}?
+                        <label className="block text-sm font-bold text-muted-foreground uppercase tracking-wider">
+                            Leave a chaotic note for {data.creatorName || 'them'}?
                         </label>
                         <textarea
                             value={note}
                             onChange={(e) => setNote(e.target.value)}
-                            className="w-full p-3 rounded-xl border border-pink-200 bg-white/80 focus:ring-2 focus:ring-rose-400 focus:outline-none text-rose-900 placeholder:text-rose-300 min-h-[100px]"
+                            className="w-full p-3 rounded-xl border border-border bg-background focus:ring-2 focus:ring-primary focus:outline-none text-foreground placeholder:text-muted-foreground min-h-[100px]"
                             placeholder="Type something nice..."
                         />
                         <button

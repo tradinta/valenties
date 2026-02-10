@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Heart } from 'lucide-react';
+import { Zap, Sparkles } from 'lucide-react';
 
 export const Footer = () => {
     return (
@@ -11,9 +11,9 @@ export const Footer = () => {
                     <div className="md:col-span-2">
                         <div className="flex items-center gap-2 mb-4">
                             <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-                                <Heart className="w-5 h-5 fill-white text-white" />
+                                <Zap className="w-5 h-5 fill-white text-white" />
                             </div>
-                            <span className="text-2xl font-black">KIHUMBA</span>
+                            <span className="text-2xl font-black uppercase tracking-tight">Kihumba</span>
                         </div>
                         <p className="opacity-60 font-medium max-w-sm">
                             Digital tools for modern romance. Made with chaos and questionable decisions.
@@ -42,7 +42,7 @@ export const Footer = () => {
                 </div>
 
                 <div className="border-t border-background/10 pt-8 text-center opacity-40 text-sm font-bold">
-                    © {new Date().getFullYear()} Kihumba. All rights reserved. Built with 💖 and chaos.
+                    © {new Date().getFullYear()} Kihumba. All rights reserved. Built with ⚡ and chaos.
                 </div>
             </div>
         </footer>

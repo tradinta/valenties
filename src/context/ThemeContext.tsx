@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 // 3 Unified Themes
-export type Theme = 'classic' | 'dark-romance' | 'neon-love';
+export type Theme = 'classic' | 'dark' | 'neon';
 
 interface ThemeContextType {
     theme: Theme;
@@ -18,20 +18,24 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 const THEME_MIGRATION: Record<string, Theme> = {
     'valentine': 'classic',
     'neo': 'classic',
-    'cosmos': 'neon-love',
-    'deep-red': 'dark-romance',
+    'cosmos': 'neon',
+    'cosmos-bear': 'neon',
+    'deep-red': 'dark',
+    'obsidian': 'dark',
     'classic': 'classic',
-    'dark-romance': 'dark-romance',
-    'neon-love': 'neon-love',
+    'dark-romance': 'dark',
+    'neon-love': 'neon',
+    'dark': 'dark',
+    'neon': 'neon',
 };
 
 const THEME_CLASSES: Record<Theme, string> = {
     'classic': '', // Default, no class needed
-    'dark-romance': 'dark-romance',
-    'neon-love': 'neon-love',
+    'dark': 'dark',
+    'neon': 'neon',
 };
 
-const THEME_ORDER: Theme[] = ['classic', 'dark-romance', 'neon-love'];
+const THEME_ORDER: Theme[] = ['classic', 'dark', 'neon'];
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const [theme, setThemeState] = useState<Theme>('classic');
@@ -56,19 +60,20 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         if (cls) root.classList.add(cls);
     };
 
-    const setTheme = (newTheme: Theme) => {
-        setThemeState(newTheme);
-        localStorage.setItem('kihumba_theme', newTheme);
-        applyThemeClass(newTheme);
+    const setTheme = (newTheme: any) => {
+        const migrated = THEME_MIGRATION[newTheme] || 'classic';
+        setThemeState(migrated);
+        localStorage.setItem('kihumba_theme', migrated);
+        applyThemeClass(migrated);
     };
-
+    stone
     const toggleTheme = () => {
         const currentIndex = THEME_ORDER.indexOf(theme);
         const nextIndex = (currentIndex + 1) % THEME_ORDER.length;
         setTheme(THEME_ORDER[nextIndex]);
     };
 
-    const isDark = theme === 'dark-romance' || theme === 'neon-love';
+    const isDark = theme === 'dark' || theme === 'neon';
 
     return (
         <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, isDark }}>

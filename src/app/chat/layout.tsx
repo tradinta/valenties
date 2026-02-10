@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Random Love Chat',
-    description: 'Connect anonymously with strangers. Vent, flirt, or just be weird together.',
+    title: 'Random Chaos Chat',
+    description: 'Connect anonymously with strangers. Vent, scream, or just be weird together.',
     openGraph: {
-        title: 'Random Love Chat | Kihumba',
-        description: 'Bored? Lonely? Connect with a random stranger right now. No sign-up required.',
+        title: 'Random Chaos Chat | Kihumba',
+        description: 'Connect with a random stranger right now. No sign-up required.',
         url: 'https://kihumba.com/chat',
     },
 };

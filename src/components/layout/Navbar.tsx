@@ -10,8 +10,8 @@ import { LogoDroplet } from '@/components/ui/LogoDroplet';
 
 const THEMES: { id: Theme; color: string; label: string; emoji: string }[] = [
     { id: 'classic', color: '#FF0040', label: 'Classic', emoji: '☀️' },
-    { id: 'dark-romance', color: '#FF1744', label: 'Dark Romance', emoji: '🌙' },
-    { id: 'neon-love', color: '#FF00FF', label: 'Neon Love', emoji: '⚡' },
+    { id: 'dark', color: '#FF1744', label: 'Noir', emoji: '🌙' },
+    { id: 'neon', color: '#FF00FF', label: 'Cyber', emoji: '⚡' },
 ];
 
 export const Navbar = () => {
