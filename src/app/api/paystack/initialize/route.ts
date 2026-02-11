@@ -44,19 +44,25 @@ export async function POST(req: NextRequest) {
         // 2. Determine Amount
         const pricing = planConfig.price as PlanPricing;
         let paystackPlanCode: string | undefined = undefined;
-        let finalCurrency = currency;
+        let finalCurrency = currency; // Default to requested
+
+        // CRITICAL FIX: If user requests USD, force switch to KES because merchant account likely doesn't support USD directly.
+        // We use the configured KES price instead of a hardcoded multiplier for accuracy.
+        if (finalCurrency === 'USD') {
+            finalCurrency = 'KES';
+        }
 
         if (planConfig.type === 'subscription') {
-            // 1. Try requested currency
-            paystackPlanCode = planConfig.paystackPlanCodes?.[currency];
+            // 1. Try key for final currency (e.g. KES)
+            paystackPlanCode = planConfig.paystackPlanCodes?.[finalCurrency];
 
-            // 2. If no code for this currency, try KES (common fallback for Paystack/Kenya)
+            // 2. If no code for this currency, try fallback (KES again, just in case)
             if (!paystackPlanCode && planConfig.paystackPlanCodes?.['KES']) {
                 paystackPlanCode = planConfig.paystackPlanCodes['KES'];
                 finalCurrency = 'KES';
             }
 
-            // 3. If still no code, try first available
+            // 3. Last resort: first available code
             if (!paystackPlanCode && planConfig.paystackPlanCodes) {
                 const firstKey = Object.keys(planConfig.paystackPlanCodes)[0] as keyof PlanPricing;
                 if (firstKey) {

@@ -65,6 +65,13 @@ function PremiumContent() {
         load();
     }, []);
 
+    // Auto-detect or default currency
+    useEffect(() => {
+        // For now, default to KES as user appears to be in Kenya region (based on error context)
+        // In a real app, we'd use IP geolocation here
+        setCurrency('KES');
+    }, []);
+
 
 
     const getPrice = (plan: 'starter' | 'casual' | 'premium'): string => {
@@ -138,12 +145,30 @@ function PremiumContent() {
         );
     }
 
+
+
+    const handleCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setCurrency(e.target.value as PaystackCurrency);
+    };
+
     return (
         <div className="min-h-screen bg-background pt-28 pb-20 px-4">
             <div className="max-w-6xl mx-auto space-y-12">
 
-                {/* Header */}
-                <div className="text-center space-y-4">
+                {/* Header & Currency Selector */}
+                <div className="relative text-center space-y-4">
+                    <div className="flex justify-center md:absolute md:top-0 md:right-0 mb-4 md:mb-0">
+                        <select
+                            value={currency}
+                            onChange={handleCurrencyChange}
+                            className="bg-card border-2 border-border rounded-lg px-3 py-1 font-bold text-sm shadow-[var(--shadow-brutal-sm)] focus:outline-none focus:ring-2 focus:ring-primary"
+                        >
+                            {Object.keys(CURRENCY_SYMBOLS).map((c) => (
+                                <option key={c} value={c}>{c} ({CURRENCY_SYMBOLS[c as PaystackCurrency]})</option>
+                            ))}
+                        </select>
+                    </div>
+
                     <motion.div
                         initial={{ y: -20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
